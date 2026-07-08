@@ -1,0 +1,591 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default model (G4F local keyless aggregator - 91+ models, no API key)
+  "model": "g4f/gpt-4o-mini",
+
+  // Lightweight tasks use a cheaper model
+  "small_model": "g4f/gpt-4o-mini",
+
+  // === MODEL FAILOVER CONFIG ===
+  // When a model fails, use /switch-model or @model-router to auto-failover
+  // through the fallback chain of 28 free models
+
+  // === FREE AI PROVIDERS (2026 - 26 providers, 100+ models) ===
+  // API keys: add via /connect command in TUI (except keyless providers)
+  // Keyless providers work immediately without any key
+
+  "provider": {
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  CATEGORY 1: KEYLESS (NO API KEY REQUIRED)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // ─── 1. Pollinations.ai (KEYLESS - VERIFIED WORKS) ─────────────────
+    // No API key required! 1 concurrent request per IP. Tested ✅
+    "pollinations": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Pollinations AI (Keyless)",
+      "options": {
+        "baseURL": "https://text.pollinations.ai/openai"
+      },
+      "models": {
+        "openai": { "name": "GPT-OSS 20B (Tool-capable)" }
+      }
+    },
+
+    // ─── 2. ApiAirforce (KEYLESS - VERIFIED WORKS) ────────────────────
+    // No API key required! Free tier with 1 req/s rate limit. Tested ✅
+    "apiairforce": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ApiAirforce (Keyless)",
+      "options": {
+        "baseURL": "https://api.airforce/v1"
+      },
+      "models": {
+        "openai": { "name": "OpenAI-compatible (Keyless)" },
+        "grok-4.1-mini": { "name": "Grok 4.1 Mini" },
+        "step-3.5-flash": { "name": "Step 3.5 Flash" },
+        "gemma3-270m": { "name": "Gemma 3 270M" },
+        "moirai-agent": { "name": "Moirai Agent" },
+        "translategemma-27b": { "name": "TranslateGemma 27B" }
+      }
+    },
+
+    // ─── 3. KeylessAI (KEYLESS - DNS UNRELIABLE) ──────────────────────
+    // No API key required. May have DNS issues. Falls back to Pollinations/ApiAirforce
+    "keylessai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "KeylessAI (Keyless - unstable)",
+      "options": {
+        "baseURL": "https://keylessai.thryx.workers.dev/v1"
+      },
+      "models": {
+        "openai-fast": { "name": "GPT-OSS 20B (Keyless)" },
+        "grok-4.1-mini": { "name": "Grok 4.1 Mini (Keyless)" }
+      }
+    },
+
+    // ─── 5. OVHcloud AI Endpoints (KEYLESS - VERIFIED WORKS) ──────────
+    // Without key: 2 req/min/IP | With key: ~400 RPM. Tested ✅
+    // Returns 429 on rate limit, then auto-fallbacks
+    "ovhcloud": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OVHcloud AI (Keyless)",
+      "options": {
+        "baseURL": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
+      },
+      "models": {
+        "Mistral-7B-Instruct-v0.3": { "name": "Mistral 7B v0.3" },
+        "Meta-Llama-3_3-70B-Instruct": { "name": "Llama 3.3 70B" },
+        "Qwen3.6-27B": { "name": "Qwen 3.6 27B (1M ctx)" },
+        "Qwen3-Coder-30B-A3B-Instruct": { "name": "Qwen 3 Coder 30B" },
+        "Mistral-Small-3.2-24B-Instruct": { "name": "Mistral Small 3.2 24B" },
+        "Llama-3.1-8B-Instruct": { "name": "Llama 3.1 8B" },
+        "Mistral-Nemo-Instruct-2407": { "name": "Mistral Nemo" },
+        "Qwen2.5-VL-72B-Instruct": { "name": "Qwen 2.5 VL 72B (Vision)" }
+      }
+    },
+
+    // ─── 4. LLM7.io (KEYLESS - DNS UNRELIABLE) ─────────────────────────
+    // No registration needed. Tested: DNS timeout (000), may come back later
+    "llm7": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LLM7.io (Keyless - unstable)",
+      "options": {
+        "baseURL": "https://api.llm7.io/v1"
+      },
+      "models": {
+        "deepseek-r1-0528": { "name": "DeepSeek R1" },
+        "deepseek-v3-0324": { "name": "DeepSeek V3" },
+        "gpt-4o-mini": { "name": "GPT-4o Mini" },
+        "mistral-small-3.1-24b": { "name": "Mistral Small 3.1 24B" },
+        "qwen2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B" }
+      }
+    },
+
+    // ─── 6. AI Horde (FREE COMMUNITY - NEEDS KEY "0000000000") ────────
+    // Anonymous key: "0000000000". Free community-powered commons
+    "aihorde": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AI Horde (Community)",
+      "options": {
+        "baseURL": "https://aihorde.net/api/v2"
+      },
+      "models": {
+        "koboldcpp/llama-3.3-70b": { "name": "Llama 3.3 70B (Community)" },
+        "koboldcpp/gemma-4-31b": { "name": "Gemma 4 31B (Community)" },
+        "koboldcpp/mistral-small-3.1": { "name": "Mistral Small 3.1 (Community)" }
+      }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  CATEGORY 2: FREE TIER (API KEY REQUIRED, NO CREDIT CARD)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // ─── 7. Groq ────────────────────────────────────────────────────────
+    // Free: 30 RPM, 1,000 RPD | Ultra-fast LPU inference
+    // Sign up: https://console.groq.com
+    "groq": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Groq (Free)",
+      "options": {
+        "baseURL": "https://api.groq.com/openai/v1"
+      },
+      "models": {
+        "llama-3.3-70b-versatile": { "name": "Llama 3.3 70B" },
+        "llama-4-scout-17b-16e-instruct": { "name": "Llama 4 Scout 17B" },
+        "qwen-qwen3-32b": { "name": "Qwen3 32B" },
+        "gpt-oss-120b": { "name": "GPT-OSS 120B" },
+        "mistral-saba-24b": { "name": "Mistral Saba 24B" },
+        "llama-3.1-8b-instant": { "name": "Llama 3.1 8B Instant" }
+      }
+    },
+
+    // ─── 8. Cerebras ────────────────────────────────────────────────────
+    // Free: 30 RPM, 1M tokens/day | ~2,600 tok/s inference
+    // Sign up: https://inference.cerebras.ai
+    "cerebras": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Cerebras (Free)",
+      "options": {
+        "baseURL": "https://api.cerebras.ai/v1"
+      },
+      "models": {
+        "gpt-oss-120b": { "name": "GPT-OSS 120B" },
+        "gpt-oss-20b": { "name": "GPT-OSS 20B" },
+        "qwen3-235b": { "name": "Qwen3 235B" },
+        "llama-3.1-70b": { "name": "Llama 3.1 70B" },
+        "zai-glm-4.7": { "name": "Z.AI GLM 4.7" }
+      }
+    },
+
+    // ─── 9. Mistral AI ─────────────────────────────────────────────────
+    // Free Experiment tier: 1B tokens/month, ~2 RPM
+    // Sign up: https://console.mistral.ai
+    "mistral": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Mistral AI (Free)",
+      "options": {
+        "baseURL": "https://api.mistral.ai/v1"
+      },
+      "models": {
+        "mistral-large-3": { "name": "Mistral Large 3 (128B)" },
+        "mistral-medium-3.5": { "name": "Mistral Medium 3.5 (128B)" },
+        "mistral-small-3.1": { "name": "Mistral Small 3.1" },
+        "mistral-small-4": { "name": "Mistral Small 4" },
+        "codestral": { "name": "Codestral" },
+        "open-mistral-nemo": { "name": "Open Mistral Nemo (12B)" },
+        "pixtral-large": { "name": "Pixtral Large (Vision)" }
+      }
+    },
+
+    // ─── 10. NVIDIA NIM ────────────────────────────────────────────────
+    // Free: build credits, ~40 RPM, 100+ models
+    // Sign up: https://build.nvidia.com
+    "nvidia": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA NIM (Free)",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1"
+      },
+      "models": {
+        "deepseek-ai/deepseek-r1": { "name": "DeepSeek R1" },
+        "nvidia/nemotron-3-super-120b-a12b": { "name": "Nemotron 3 Super 120B" },
+        "nvidia/nemotron-3-nano-30b-a3b": { "name": "Nemotron 3 Nano 30B" },
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1": { "name": "Nemotron Ultra 253B" },
+        "meta/llama-3.3-70b-instruct": { "name": "Llama 3.3 70B" },
+        "meta/llama-3.1-405b-instruct": { "name": "Llama 3.1 405B" },
+        "qwen/qwen2.5-72b-instruct": { "name": "Qwen 2.5 72B" },
+        "microsoft/phi-4": { "name": "Phi-4" },
+        "mistralai/mistral-large-2-instruct": { "name": "Mistral Large 2" },
+        "google/gemma-4-31b": { "name": "Gemma 4 31B" },
+        "minimax/minimax-m2.7": { "name": "MiniMax M2.7" },
+        "kimi/k2.6": { "name": "Kimi K2.6" }
+      }
+    },
+
+    // ─── 11. OpenRouter (Free Models) ───────────────────────────────────
+    // ~22 free models via :free suffix | 200 RPD per model
+    // Sign up: https://openrouter.ai
+    "openrouter": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OpenRouter (Free)",
+      "options": {
+        "baseURL": "https://openrouter.ai/api/v1"
+      },
+      "models": {
+        "qwen/qwen3-coder:free": { "name": "Qwen3 Coder (Free)" },
+        "nvidia/nemotron-3-ultra-550b-a55b:free": { "name": "Nemotron 3 Ultra 550B (Free)" },
+        "nvidia/nemotron-3-super-120b-a12b:free": { "name": "Nemotron 3 Super 120B (Free)" },
+        "openai/gpt-oss-120b:free": { "name": "GPT-OSS 120B (Free)" },
+        "openai/gpt-oss-20b:free": { "name": "GPT-OSS 20B (Free)" },
+        "meta-llama/llama-3.3-70b-instruct:free": { "name": "Llama 3.3 70B (Free)" },
+        "nousresearch/hermes-3-llama-3.1-405b:free": { "name": "Hermes 3 405B (Free)" },
+        "google/gemma-4-31b-it:free": { "name": "Gemma 4 31B (Free)" },
+        "poolside/laguna-m.1:free": { "name": "Poolside Laguna M.1 (Free)" },
+        "qwen/qwen3-next-80b-a3b-instruct:free": { "name": "Qwen3 Next 80B (Free)" },
+        "tencent/hunyuan3:free": { "name": "Hunyuan 3 (Free)" },
+        "minimax/minimax-m2.5:free": { "name": "MiniMax M2.5 (Free)" }
+      }
+    },
+
+    // ─── 12. Cloudflare Workers AI ─────────────────────────────────────
+    // Free: 10,000 neurons/day | 50+ models
+    // Sign up: https://dash.cloudflare.com
+    // baseURL needs YOUR account_id: /client/v4/accounts/{account_id}/ai/v1
+    "cloudflare": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Cloudflare Workers AI (Free)",
+      "options": {
+        "baseURL": "https://api.cloudflare.com/client/v4/accounts/YOUR_ACCOUNT_ID/ai/v1"
+      },
+      "models": {
+        "@cf/moonshotai/kimi-k2.6": { "name": "Kimi K2.6" },
+        "@cf/moonshotai/kimi-k2.7-code": { "name": "Kimi K2.7 Code" },
+        "@cf/meta/llama-3.3-70b-instruct-fp8-fast": { "name": "Llama 3.3 70B" },
+        "@cf/meta/llama-4-scout-17b-16e-instruct": { "name": "Llama 4 Scout 17B" },
+        "@cf/openai/gpt-oss-120b": { "name": "GPT-OSS 120B" },
+        "@cf/openai/gpt-oss-20b": { "name": "GPT-OSS 20B" },
+        "@cf/qwen/qwen2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B" },
+        "@cf/google/gemma-4-26b-a4b-it": { "name": "Gemma 4 26B" },
+        "@cf/deepseek-ai/deepseek-r1-distill-qwen-32b": { "name": "DeepSeek R1 Distill 32B" },
+        "@cf/zhipuai/glm-4.7-flash": { "name": "GLM 4.7 Flash" },
+        "@cf/mistralai/mistral-small-3.1-24b-instruct": { "name": "Mistral Small 3.1 24B" }
+      }
+    },
+
+    // ─── 13. Together AI ────────────────────────────────────────────────
+    // Free: 68 zero-cost models + $25 credits
+    // Sign up: https://api.together.ai
+    "togetherai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Together AI (Free)",
+      "options": {
+        "baseURL": "https://api.together.ai/v1"
+      },
+      "models": {
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo": { "name": "Llama 3.3 70B Turbo" },
+        "qwen/Qwen2.5-Coder-32B-Instruct": { "name": "Qwen 2.5 Coder 32B" },
+        "google/gemma-4-31B-it": { "name": "Gemma 4 31B" },
+        "mistralai/Mistral-Small-3.1": { "name": "Mistral Small 3.1" },
+        "openai/gpt-oss-20b": { "name": "GPT-OSS 20B" }
+      }
+    },
+
+    // ─── 14. SambaNova ──────────────────────────────────────────────────
+    // Free: 20 RPM, 200K tokens/day | $5 trial credits
+    // Sign up: https://cloud.sambanova.ai
+    "sambanova": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SambaNova (Free)",
+      "options": {
+        "baseURL": "https://api.sambanova.ai/v1"
+      },
+      "models": {
+        "DeepSeek-V3.1": { "name": "DeepSeek V3.1" },
+        "DeepSeek-V3.2-Preview": { "name": "DeepSeek V3.2 Preview" },
+        "Meta-Llama-3.3-70B-Instruct": { "name": "Llama 3.3 70B" },
+        "gpt-oss-120b": { "name": "GPT-OSS 120B" },
+        "MiniMax-M2.7": { "name": "MiniMax M2.7" },
+        "gemma-4-31B-it-Preview": { "name": "Gemma 4 31B Preview" }
+      }
+    },
+
+    // ─── 15. Hugging Face Inference Router ──────────────────────────────
+    // Free: ~$0.10/mo credits | Thousands of models
+    // Sign up: https://huggingface.co/settings/tokens
+    "huggingface": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Hugging Face (Free)",
+      "options": {
+        "baseURL": "https://router.huggingface.co/v1"
+      },
+      "models": {
+        "deepseek-ai/DeepSeek-V3-0324": { "name": "DeepSeek V3" },
+        "meta-llama/Llama-3.3-70B-Instruct": { "name": "Llama 3.3 70B" },
+        "openai/gpt-oss-20b": { "name": "GPT-OSS 20B" },
+        "qwen/Qwen2.5-Coder-32B-Instruct": { "name": "Qwen 2.5 Coder 32B" },
+        "microsoft/Phi-3.5-mini-instruct": { "name": "Phi-3.5 Mini" },
+        "mistralai/Mistral-7B-Instruct-v0.3": { "name": "Mistral 7B v0.3" }
+      }
+    },
+
+    // ─── 16. GitHub Models ──────────────────────────────────────────────
+    // Free: 45+ models, 10-15 RPM, 50-150 RPD
+    // Sign up: https://github.com/marketplace/models
+    "githubmodels": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "GitHub Models (Free)",
+      "options": {
+        "baseURL": "https://models.github.ai/inference"
+      },
+      "models": {
+        "gpt-5": { "name": "GPT-5" },
+        "gpt-4.1": { "name": "GPT-4.1 (1M ctx)" },
+        "gpt-4.1-mini": { "name": "GPT-4.1 Mini (1M ctx)" },
+        "gpt-4o": { "name": "GPT-4o" },
+        "o4-mini": { "name": "o4 Mini (Reasoning)" },
+        "Llama-4-Scout-17B-16E": { "name": "Llama 4 Scout 17B" },
+        "Llama-4-Maverick-17B-128E": { "name": "Llama 4 Maverick 17B" },
+        "Meta-Llama-3.3-70B": { "name": "Llama 3.3 70B" },
+        "DeepSeek-R1": { "name": "DeepSeek R1" },
+        "Mistral-Small-3.1": { "name": "Mistral Small 3.1" }
+      }
+    },
+
+    // ─── 17. DeepSeek API ───────────────────────────────────────────────
+    // Free: 5M token grant on sign-up | No credit card
+    // Sign up: https://platform.deepseek.com
+    "deepseek": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "DeepSeek (Free)",
+      "options": {
+        "baseURL": "https://api.deepseek.com/v1"
+      },
+      "models": {
+        "deepseek-v4-flash": { "name": "DeepSeek V4 Flash" },
+        "deepseek-v4-pro": { "name": "DeepSeek V4 Pro" }
+      }
+    },
+
+    // ─── 18. Scaleway ───────────────────────────────────────────────────
+    // Free: 1M permanent tokens
+    // Sign up: https://console.scaleway.com
+    "scaleway": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Scaleway AI (Free)",
+      "options": {
+        "baseURL": "https://api.scaleway.ai/v1"
+      },
+      "models": {
+        "meta-llama/llama-3.3-70b": { "name": "Llama 3.3 70B" },
+        "qwen/qwen2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B" },
+        "mistral/mistral-large": { "name": "Mistral Large" },
+        "deepseek/deepseek-r1": { "name": "DeepSeek R1" }
+      }
+    },
+
+    // ─── 19. Cohere (Free Trial) ─────────────────────────────────────────
+    // Free: 1000 requests/month, no credit card
+    // Sign up: https://dashboard.cohere.com
+    "cohere": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Cohere (Free Trial)",
+      "options": {
+        "baseURL": "https://api.cohere.com/v2"
+      },
+      "models": {
+        "command-a-plus": { "name": "Command A+ (218B)" },
+        "command-a": { "name": "Command A (111B)" },
+        "command-r-plus": { "name": "Command R+" }
+      }
+    },
+
+    // ─── 20. SiliconFlow ────────────────────────────────────────────────
+    // Permanently free models, no credit card | 200+ paid models
+    // Sign up: https://cloud.siliconflow.cn
+    "siliconflow": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SiliconFlow (Free)",
+      "options": {
+        "baseURL": "https://api.siliconflow.cn/v1"
+      },
+      "models": {
+        "Qwen/Qwen3-8B": { "name": "Qwen 3 8B (Free)" },
+        "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": { "name": "DeepSeek R1 Distill 7B (Free)" }
+      }
+    },
+
+    // ─── 21. Z.AI (Zhipu AI) ───────────────────────────────────────────
+    // Permanent free models, no credit card
+    // Sign up: https://open.bigmodel.cn
+    "zai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Z.AI Zhipu (Free)",
+      "options": {
+        "baseURL": "https://open.bigmodel.cn/api/paas/v4"
+      },
+      "models": {
+        "GLM-4.7-Flash": { "name": "GLM 4.7 Flash" },
+        "GLM-4.6V-Flash": { "name": "GLM 4.6V Flash (Vision)" }
+      }
+    },
+
+    // ─── 22. Kilo Code ────────────────────────────────────────────────────
+    // Free models, no credit card | Auto-router with free fallback
+    // Sign up: https://kilo.ai
+    "kilo": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Kilo Code (Free)",
+      "options": {
+        "baseURL": "https://api.kilo.ai/api/gateway"
+      },
+      "models": {
+        "x-ai/grok-code-fast-1:free": { "name": "Grok Code Fast 1 (Free)" },
+        "minimax/minimax-m2.5:free": { "name": "MiniMax M2.5 (Free)" },
+        "nvidia/nemotron-3-super-120b-a12b:free": { "name": "Nemotron 3 Super 120B (Free)" },
+        "arcee-ai/trinity-large-thinking:free": { "name": "Trinity Large Thinking (Free)" },
+        "bytedance-seed/dola-seed-2.0-pro:free": { "name": "Dola Seed 2.0 Pro (Free)" },
+        "openrouter/free": { "name": "OpenRouter Auto-Free" }
+      }
+    },
+
+    // ─── 23. ModelScope ──────────────────────────────────────────────────
+    // Free: 2,000 requests/day for registered users (Alibaba Cloud binding)
+    // Sign up: https://modelscope.cn
+    "modelscope": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "ModelScope (Free)",
+      "options": {
+        "baseURL": "https://api-inference.modelscope.cn/v1"
+      },
+      "models": {
+        "Qwen/Qwen3.5-35B-A3B": { "name": "Qwen 3.5 35B" },
+        "Qwen/Qwen3.5-27B": { "name": "Qwen 3.5 27B" }
+      }
+    },
+
+    // ─── 24. Alibaba DashScope ──────────────────────────────────────────
+    // Free: 1M tokens per model (90-day expiry)
+    // Sign up: https://dashscope.aliyun.com
+    "dashscope": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "DashScope (Free)",
+      "options": {
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1"
+      },
+      "models": {
+        "qwen/qwen3.6-27b": { "name": "Qwen 3.6 27B (1M ctx)" },
+        "qwen/qwen2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B" }
+      }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  CATEGORY 3: UNIQUE PROVIDERS
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // ─── 25. Aion Labs ──────────────────────────────────────────────────
+    // Specialized for roleplay/storytelling | 15 RPM, 20K tokens/day
+    // Sign up: https://www.aionlabs.ai
+    "aion": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Aion Labs (Free)",
+      "options": {
+        "baseURL": "https://api.aionlabs.ai/v1"
+      },
+      "models": {
+        "aion-2.5": { "name": "Aion 2.5 (128K ctx)" },
+        "aion-2.0": { "name": "Aion 2.0 (128K ctx)" },
+        "aion-rp-1.0-8b": { "name": "Aion-RP 1.0 8B" }
+      }
+    },
+
+    // ─── 26. Ollama Cloud ────────────────────────────────────────────────
+    // Free tier with qualitative usage limits | 400+ models
+    // Sign up: https://ollama.com/settings/keys
+    "ollamacloud": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama Cloud (Free)",
+      "options": {
+        "baseURL": "https://api.ollama.com"
+      },
+      "models": {
+        "gpt-oss:120b-cloud": { "name": "GPT-OSS 120B Cloud" },
+        "deepseek-v3.1:671b-cloud": { "name": "DeepSeek V3.1 671B Cloud" },
+        "qwen3-coder:480b-cloud": { "name": "Qwen3 Coder 480B Cloud" },
+        "kimi-k2:1t-cloud": { "name": "Kimi K2 1T Cloud" },
+        "glm-4.6:cloud": { "name": "GLM 4.6 Cloud" },
+        "deepseek-r1:cloud": { "name": "DeepSeek R1 Cloud" }
+      }
+    },
+
+    // ─── 27. FreeTheAi (KEYLESS VIA DISCORD) ────────────────────────────
+    // 60+ active models, free key via Discord, tool calling
+    // Get key: https://freetheai.xyz (Discord server)
+    "freetheai": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "FreeTheAi (Free)",
+      "options": {
+        "baseURL": "https://freetheai.xyz/v1"
+      },
+      "models": {
+        "kai/gpt-oss-20b": { "name": "GPT-OSS 20B" },
+        "kai/llama-3.3-70b": { "name": "Llama 3.3 70B" },
+        "kai/qwen3-coder-32b": { "name": "Qwen3 Coder 32B" },
+        "kai/mistral-small-3.1": { "name": "Mistral Small 3.1" },
+        "kai/deepseek-v4-flash": { "name": "DeepSeek V4 Flash" }
+      }
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════
+    //  CATEGORY 4: LOCAL KEYLESS AGGREGATORS (self-hosted sidecars)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    // ─── 28. G4F (GPT4Free) Local API (PRIMARY - KEYLESS ✅) ──────────
+    // Self-hosted keyless aggregator. 1058 models, 30+ providers.
+    // Verified working ✅ Returns responses through WeWordle, Pollinations,
+    // DuckDuckGo, DeepInfra and other keyless endpoints.
+    // Run: python -c "from g4f.api import run_api; run_api(port=1337)"
+    // Auto-restart via crontab or systemd recommended.
+    "g4f": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "G4F Local (1058 Models, Keyless)",
+      "options": {
+        "baseURL": "http://localhost:1337/v1"
+      },
+      "models": {
+        "gpt-4o-mini": { "name": "GPT-4o Mini (Working ✅)" },
+        "gpt-4o": { "name": "GPT-4o" },
+        "gpt-4": { "name": "GPT-4" },
+        "gpt-4.1": { "name": "GPT-4.1 (1M ctx)" },
+        "gpt-4.1-mini": { "name": "GPT-4.1 Mini (1M ctx)" },
+        "o3-mini": { "name": "o3 Mini (Reasoning)" },
+        "o4-mini": { "name": "o4 Mini (Reasoning)" },
+        "claude-3.5-sonnet": { "name": "Claude 3.5 Sonnet" },
+        "claude-4-opus": { "name": "Claude 4 Opus" },
+        "claude-opus-4-6": { "name": "Claude Opus 4.6" },
+        "gemini-2.5-flash": { "name": "Gemini 2.5 Flash" },
+        "gemini-2.5-pro": { "name": "Gemini 2.5 Pro" },
+        "gemini-3.5-flash": { "name": "Gemini 3.5 Flash" },
+        "llama-3.3-70b": { "name": "Llama 3.3 70B" },
+        "llama-4-scout": { "name": "Llama 4 Scout" },
+        "llama-4-maverick": { "name": "Llama 4 Maverick" },
+        "deepseek-r1": { "name": "DeepSeek R1" },
+        "deepseek-v3": { "name": "DeepSeek V3" },
+        "qwen-2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B (Coding)" },
+        "qwen-3-235b": { "name": "Qwen 3 235B" },
+        "grok-3": { "name": "Grok 3" },
+        "mistral-small-24b": { "name": "Mistral Small 24B" },
+        "command-a": { "name": "Command A (111B)" },
+        "kimi-k2": { "name": "Kimi K2 (1T)" }
+      }
+    },
+
+    // ─── 29. Token-Free Gateway ─────────────────────────────────────
+    // Uses browser sessions: Claude Pro, ChatGPT Plus, Gemini.
+    // Run: token-free-gateway serve (after token-free-gateway webauth)
+    // Gives access to Claude, ChatGPT, DeepSeek, Gemini, Grok, Kimi etc.
+    "tokenfree": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Token-Free Gateway (Browser)",
+      "options": {
+        "baseURL": "http://localhost:3456/v1"
+      },
+      "models": {
+        "claude-sonnet-4-20250514": { "name": "Claude Sonnet 4" },
+        "claude-opus-4-6": { "name": "Claude Opus 4.6" },
+        "chatgpt-5.1": { "name": "ChatGPT 5.1" },
+        "gemini-2.5-flash": { "name": "Gemini 2.5 Flash" },
+        "gemini-2.5-pro": { "name": "Gemini 2.5 Pro" },
+        "deepseek-v4-pro": { "name": "DeepSeek V4 Pro" },
+        "grok-4": { "name": "Grok 4" },
+        "qwen-3.5-27b": { "name": "Qwen 3.5 27B" },
+        "kimi-k2.7": { "name": "Kimi K2.7" },
+        "glm-4.7": { "name": "GLM 4.7" },
+        "perplexity-sonar-pro": { "name": "Perplexity Sonar Pro" }
+      }
+    }
+
+  }
+}
