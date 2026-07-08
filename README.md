@@ -1,68 +1,55 @@
 # opencode-portable
 
-Przenośna konfiguracja **opencode** z 29 providerami AI i keyless agregatorem G4F (1058 modeli, zero API keys).
+Przenośna konfiguracja **opencode** — 29 providerów AI, G4F keyless agregator (1058 modeli), 6-tier fallback chain. Zero API keys.
 
 ## Szybki start
 
 ```bash
-curl -L https://raw.githubusercontent.com/DevMike1993/opencode-portable/main/setup.sh | bash
+# Opcja 1 (jeśli masz gh)
+curl -sL https://raw.githubusercontent.com/DevMike1993/opencode-portable/main/setup.sh | bash
+
+# Opcja 2 (bootstrap przez gist)
+bash <(curl -sL https://gist.githubusercontent.com/DevMike1993/49d0824bb8df221172c7901b6a650343/raw/setup.sh)
+
+# Opcja 3 (ręcznie)
+git clone https://github.com/DevMike1993/opencode-portable.git
+cd opencode-portable && bash setup.sh
 ```
 
-Skrypt automatycznie:
-- Sprawdza aktualizacje i pobiera tylko zmienione pliki
-- Instaluje opencode CLI, G4F, Node.js, Python (jeśli brak)
-- Kopiuje config (29 providerów, 6-tier fallback chain)
-- Uruchamia G4F jako serwis systemd na porcie 1337
-- Testuje czy endpoint działa
-
-## Użycie
-
-```bash
-# Instalacja na nowym urządzeniu
-curl -L https://raw.githubusercontent.com/DevMike1993/opencode-portable/main/setup.sh | bash
-
-# Aktualizacja na istniejącym
-cd ~/opencode-portable && ./setup.sh
-
-# Sprawdź status
-opencode config
-```
-
-## Struktura
-
-```
-opencode-portable/
-├── setup.sh                  # Instalator + auto-updater
-├── VERSION                   # Numer wersji
-├── checksums.txt             # SHA256 plików do auto-update
-├── config/
-│   └── opencode.jsonc        # 29 providerów, 171+ modeli
-├── agents/
-│   └── model-router.md       # 6-tier fallback chain
-├── commands/                 # Custom komendy (/status, /switch-model, itd.)
-├── systemd/
-│   └── g4f.service           # G4F jako serwis systemd
-└── scripts/
-    ├── generate-checksums.sh # Regeneracja checksums.txt
-    └── bump-version.sh       # Podbicie wersji
-```
-
-## Auto-update
-
-Skrypt przy każdym uruchomieniu:
-1. Pobiera `VERSION` z GitHub
-2. Porównuje z lokalną wersją
-3. Jeśli nowsza → pobiera `checksums.txt` i diffuje
-4. Pobiera tylko zmienione pliki
-5. Pyta przed aktualizacją
+Jeśli `raw.githubusercontent.com` nie działa (znany problem dla tego konta), użyj opcji 2 lub 3.
 
 ## Wymagania
 
 - Linux / WSL na Windows
-- Internet (do pierwszej instalacji)
-- curl, bash
+- Python 3, pip, Node.js, npm
+- Git
+- GitHub CLI (opcjonalnie, dla auto-pobierania)
+- Internet (pierwsza instalacja)
 
-Skrypt sam instaluje brakujące zależności (Node.js, Python, pip, git).
+Skrypt sam instaluje brakujące zależności.
+
+## Po instalacji
+
+```bash
+# Sprawdź status
+opencode config
+
+# Uruchom G4F (jeśli nie startuje automatycznie)
+python3 -c "from g4f.api import run_api; run_api(port=1337)"
+
+# Aktualizuj
+cd ~/opencode-portable && git pull && bash setup.sh
+```
+
+## Komendy
+
+| Komenda | Opis |
+|---------|------|
+| `/status` | Status providerów i modeli |
+| `/switch-model` | Ręczna zmiana modelu |
+| `/fallback-chain` | Pokaż chain failover |
+| `/auto-failover` | Włącz/wyłącz auto-failover |
+| `/g4f-start` | Uruchom G4F agregator |
 
 ## Licencja
 
