@@ -113,7 +113,7 @@ install_g4f() {
   log "Sprawdzam G4F..."
   python3 -c "import g4f" &>/dev/null 2>&1 \
     && ok "G4F: $(python3 -c "import g4f; print(f'v{g4f.__version__}')" 2>/dev/null || echo 'zainstalowany')" \
-    || { pip3 install g4f 2>&1 | tail -1 && ok "G4F zainstalowany"; }
+    || { pip3 install --break-system-packages g4f 2>&1 | tail -1 && ok "G4F zainstalowany"; }
 }
 
 #=============================================================================
