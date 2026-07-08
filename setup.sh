@@ -102,8 +102,13 @@ install_opencode() {
     ok "opencode: $(opencode --version 2>/dev/null || echo 'zainstalowany')"
   else
     npm install -g @opencode-ai/cli 2>&1 | tail -3
+    # Odśwież PATH — npm -g instaluje do /usr/local/bin, ale nie wszystkie bash profile to widzą w tej sesji
+    export PATH="$PATH:/usr/local/bin"
+    hash -r 2>/dev/null || true
     ok "opencode CLI zainstalowany"
   fi
+  command -v opencode &>/dev/null || warn "opencode nie w PATH tej sesji (po zalogowaniu zadziała)"
+  command -v opencode &>/dev/null && opencode --version &>/dev/null || true
 }
 
 #=============================================================================
@@ -152,7 +157,7 @@ summary() {
     pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null || echo "?")
   fi
   local ok="OK"
-  command -v opencode &>/dev/null || ok="brak"
+  command -v opencode &>/dev/null && ok="$(opencode --version 2>/dev/null)" || ok="brak"
   echo ""
   echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"
   echo -e "${GREEN}║  opencode-portable v$v                                ║${NC}"
