@@ -102,13 +102,15 @@ install_opencode() {
     ok "opencode: $(opencode --version 2>/dev/null || echo 'zainstalowany')"
   else
     npm install -g @opencode-ai/cli 2>&1 | tail -3
-    # Odśwież PATH — npm -g instaluje do /usr/local/bin, ale nie wszystkie bash profile to widzą w tej sesji
+    local npm_root
+    npm_root=$(npm root -g 2>/dev/null)
+    if [ -n "$npm_root" ] && [ -f "$npm_root/@opencode-ai/cli/bin/lildax" ]; then
+      ln -sf "$npm_root/@opencode-ai/cli/bin/lildax" /usr/local/bin/opencode 2>/dev/null || true
+    fi
     export PATH="$PATH:/usr/local/bin"
     hash -r 2>/dev/null || true
     ok "opencode CLI zainstalowany"
   fi
-  command -v opencode &>/dev/null || warn "opencode nie w PATH tej sesji (po zalogowaniu zadziała)"
-  command -v opencode &>/dev/null && opencode --version &>/dev/null || true
 }
 
 #=============================================================================
