@@ -128,10 +128,35 @@ install_g4f() {
 #=============================================================================
 setup_config() {
   log "Konfiguruję opencode..."
-  mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/agents" "$CONFIG_DIR/commands"
+  mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/agents" "$CONFIG_DIR/commands" "$CONFIG_DIR/skills"
+
+  # Główny config
   cp "$INSTALL_DIR/config/opencode.jsonc" "$CONFIG_DIR/opencode.jsonc" 2>/dev/null && ok "config skopiowany"
-  cp "$INSTALL_DIR/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null; ok "agenty: $(ls "$INSTALL_DIR/agents/"*.md 2>/dev/null | wc -l)"
-  cp "$INSTALL_DIR/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null; ok "komendy: $(ls "$INSTALL_DIR/commands/"*.md 2>/dev/null | wc -l)"
+
+  # AGENTS.md (globalne instrukcje)
+  cp "$INSTALL_DIR/config/AGENTS.md" "$CONFIG_DIR/AGENTS.md" 2>/dev/null && ok "AGENTS.md skopiowany" || true
+
+  # Agenci (backward compat: najpierw config/agents, potem agents/)
+  local agent_count=0
+  cp "$INSTALL_DIR/config/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null && agent_count=$(ls "$CONFIG_DIR/agents/"*.md 2>/dev/null | wc -l) || true
+  cp "$INSTALL_DIR/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null && agent_count=$(ls "$CONFIG_DIR/agents/"*.md 2>/dev/null | wc -l) || true
+  ok "agenty: $agent_count"
+
+  # Komendy (backward compat: najpierw config/commands/, potem commands/)
+  local cmd_count=0
+  cp "$INSTALL_DIR/config/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null && cmd_count=$(ls "$CONFIG_DIR/commands/"*.md 2>/dev/null | wc -l) || true
+  cp "$INSTALL_DIR/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null && cmd_count=$(ls "$CONFIG_DIR/commands/"*.md 2>/dev/null | wc -l) || true
+  ok "komendy: $cmd_count"
+
+  # Skille (kopiuj całe katalogi)
+  local skill_count=0
+  for skill_dir in "$INSTALL_DIR/config/skills/"*/; do
+    [ -d "$skill_dir" ] || continue
+    local name
+    name=$(basename "$skill_dir")
+    cp -r "$skill_dir" "$CONFIG_DIR/skills/$name" 2>/dev/null && skill_count=$((skill_count + 1)) || true
+  done
+  [ "$skill_count" -gt 0 ] && ok "skille: $skill_count" || true
 }
 
 setup_systemd() {

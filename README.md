@@ -1,72 +1,102 @@
 # opencode-portable
 
-**Zero API keys. 29 providerów. 1 komenda.**
+> **Zero API keys · 29 AI providers · 6 keyless · 1058 models · 1 command**
 
-Przenośna konfiguracja [opencode CLI](https://opencode.ai) z keyless agregatorem G4F (1058 modeli), 6 keyless providerami (działają od razu), 23 darmowymi providerami (API key opcjonalnie) i token-free gateway (Claude/ChatGPT przez przeglądarkę).
+Portable [opencode CLI](https://opencode.ai) configuration with G4F keyless aggregator, 6 direct keyless providers, 23 free-tier providers (API key optional), 3 agent skills, 8 custom commands, and intelligent model failover.
 
-## Szybki start
+## Quick start
 
 ```bash
 curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
 ```
 
-Skrypt sam instaluje wszystkie zależności (Python, Node.js, git, G4F, opencode CLI, config).
+The script auto-installs Python, Node.js, git, G4F, opencode CLI, and all config. Works on clean systems — only `curl` required.
 
-## Po instalacji
+## 29 providers
 
-```bash
-# Wejdź w interfejs opencode (TUI)
-opencode
+### Keyless — works immediately, no key needed
 
-# G4F uruchomi się automatycznie przez systemd
-# Sprawdź czy działa:
-curl -X POST http://localhost:1337/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}'
+| Provider | Models | Status |
+|----------|--------|--------|
+| G4F (local) | 1058 models, 30+ providers | ✅ verified |
+| Pollinations.ai | GPT-OSS 20B | ✅ verified |
+| ApiAirforce | Grok 4.1, Gemma 3, Step 3.5 Flash | ✅ verified |
+| OVHcloud | Llama 3.3, Mistral, Qwen 3.6 | ✅ verified |
+| KeylessAI | GPT-OSS, Grok 4.1 | ⚠️ Unstable DNS |
+| LLM7.io | DeepSeek, GPT-4o mini, Mistral | ⚠️ Unstable |
+| AI Horde | Llama 3.3, Gemma 4 | Community |
 
-# Aktualizacja
-cd ~/opencode-portable && bash setup.sh
+### Free tier — API key required, no credit card
+
+Groq · Cerebras · Mistral · NVIDIA NIM · OpenRouter · Cloudflare Workers · Together AI · SambaNova · Hugging Face · GitHub Models · DeepSeek · Scaleway · Cohere · SiliconFlow · Z.AI · Kilo Code · ModelScope · DashScope · Ollama Cloud · FreeTheAi · Aion Labs · Token-Free Gateway
+
+## Custom commands
+
+| Command | Description |
+|---------|-------------|
+| `/status` | Model, G4F, keyless, API keys status |
+| `/switch-model` | Switch model (keyless priority) |
+| `/g4f-health` | G4F health check, restart, logs |
+| `/g4f-start` | Start G4F aggregator |
+| `/fallback-chain` | View/test failover chain |
+| `/fallback-chain test` | Test all providers in chain |
+| `/provider-test` | Test all 29 providers |
+| `/provider-register` | Registration guide (23 providers) |
+| `/auto-failover` | Toggle auto-failover |
+
+## Agent skills
+
+| Skill | Description |
+|-------|-------------|
+| `g4f-management` | Start, stop, restart, logs, troubleshooting |
+| `keyless-providers` | All 6 keyless providers, rate limits, reliability |
+| `provider-registration` | Step-by-step guide for 23 registration processes |
+
+## Subagent
+
+| Agent | Role | Permissions |
+|-------|------|-------------|
+| `g4f-manager` | G4F lifecycle management | bash: allow, edit: deny |
+| `model-router` | Automatic model failover | bash: allow, read: allow |
+
+## Model failover
+
+Automatic 4-tier fallback when a model fails:
+
+```
+Keyless (G4F → Pollinations → ApiAirforce → OVHcloud)
+  ↓
+Free API key (Groq → Cerebras → Mistral → NVIDIA → OpenRouter …)
+  ↓
+Specialized (Cohere → DashScope → Z.AI → Kilo → SiliconFlow …)
+  ↓
+Community (AI Horde → FreeTheAi → Aion Labs)
 ```
 
-## 29 providerów
+---
 
-### Keyless — działają od razu, bez klucza
+## Szybki start / Quick start
 
-| Provider | Modele | Status |
-|----------|--------|-------|
-| G4F (lokalny) | 1058 modeli, 30+ providerów | ✅ zweryfikowany |
-| Pollinations.ai | GPT-OSS 20B | ✅ zweryfikowany |
-| ApiAirforce | Grok 4.1, Gemma 3, Step 3.5 Flash | ✅ zweryfikowany |
-| OVHcloud | Llama 3.3, Mistral, Qwen 3.6 | ✅ zweryfikowany |
-| KeylessAI | GPT-OSS, Grok 4.1 | ⚠️ niestabilny DNS |
-| LLM7.io | DeepSeek, GPT-4o mini, Mistral | ⚠️ niestabilny |
-| AI Horde | Llama 3.3, Gemma 4 | społecznościowy |
+- **PL:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **EN:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **DE:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **FR:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **ES:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **IT:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **PT:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **RU:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **ZH:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
+- **JA:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
 
-### Z darmowym kluczem (no credit card)
+> One command works in every language.
 
-Groq, Cerebras, Mistral, NVIDIA NIM, OpenRouter, Cloudflare Workers, Together AI, SambaNova, Hugging Face, GitHub Models, DeepSeek, Scaleway, Cohere, SiliconFlow, Z.AI, Kilo Code, ModelScope, DashScope, Ollama Cloud, FreeTheAi, Aion Labs, Token-Free Gateway
-
-### Komendy
-
-| Komenda | Opis |
-|---------|------|
-| `/status` | Status providerów i modeli |
-| `/switch-model` | Zmień model ręcznie |
-| `/fallback-chain` | Pokaż chain failover |
-| `/auto-failover` | Włącz/wyłącz auto-failover |
-| `/g4f-start` | Uruchom G4F agregator |
-
-## Wymagania
+## Requirements
 
 - Linux / WSL
-- Internet (tylko pierwsza instalacja)
+- Internet (first install only)
 
-Resztę instaluje skrypt.
+Everything else is auto-installed.
 
-## Model fallback
-
-Gdy model nie odpowiada, automatycznie przełącza przez 6-tier chain: G4F (lokalny) → Pollinations → ApiAirforce → OVHcloud → openrouter (free) → z darmowym kluczem.
-
-## Licencja
+## License
 
 MIT
