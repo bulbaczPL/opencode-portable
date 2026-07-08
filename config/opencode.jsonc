@@ -68,32 +68,26 @@
       }
     },
 
-    // ─── 3. Kilo Gateway (KEYLESS - VERIFIED WORKS ✅) ─────────────────
-    // No API key required for :free models. 200 req/hr/IP. Tested ✅
+    // ─── 3. Kilo Gateway (KEYLESS - NOT WORKING) ──────────────────────
+    // Was claimed keyless but currently not responding (connection timeout).
+    // Kept for reference in case endpoint changes. Do NOT rely on this.
     "kilo": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "Kilo Gateway (Keyless)",
+      "name": "Kilo Gateway (Keyless - broken)",
       "options": {
         "baseURL": "https://api.kilo.ai/api/gateway"
       },
       "models": {
-        "kilo-auto/free": { "name": "Kilo Auto Free (auto-routed)" },
-        "tencent/hy3:free": { "name": "Tencent Hunyuan 3" },
-        "stepfun/step-3.7-flash:free": { "name": "Step 3.7 Flash" },
-        "nvidia/nemotron-3-ultra-550b-a55b:free": { "name": "Nemotron 3 Ultra 550B" },
-        "nvidia/nemotron-3-super-120b-a12b:free": { "name": "Nemotron 3 Super 120B" },
-        "poolside/laguna-m.1:free": { "name": "Poolside Laguna M.1" },
-        "cohere/north-mini-code:free": { "name": "Cohere North Mini Code" },
-        "openrouter/free": { "name": "OpenRouter Auto-Free" }
+        "kilo-auto/free": { "name": "Kilo Auto Free (auto-routed)" }
       }
     },
 
-    // ─── 5. OVHcloud AI Endpoints (KEYLESS - VERIFIED WORKS) ──────────
-    // Without key: 2 req/min/IP | With key: ~400 RPM. Tested ✅
-    // Returns 429 on rate limit, then auto-fallbacks
+    // ─── 5. OVHcloud AI Endpoints (KEYLESS - NOT WORKING) ─────────────
+    // Returns 404. Was working in the past but currently broken.
+    // Kept for reference only.
     "ovhcloud": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "OVHcloud AI (Keyless)",
+      "name": "OVHcloud AI (Keyless - broken)",
       "options": {
         "baseURL": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
       },
@@ -513,42 +507,34 @@
     // ═══════════════════════════════════════════════════════════════════════
 
     // ─── 28. G4F (GPT4Free) Local API (PRIMARY - KEYLESS ✅) ──────────
-    // Self-hosted keyless aggregator. 1058 models, 30+ providers.
-    // Verified working ✅ Returns responses through WeWordle, Pollinations,
-    // DuckDuckGo, DeepInfra and other keyless endpoints.
+    // Self-hosted keyless aggregator. Tested working models only.
     // Run: python -c "from g4f.api import run_api; run_api(port=1337)"
-    // Auto-restart via crontab or systemd recommended.
+    // All models verified via live curl test at localhost:1337 ✅ 2026-07-09
     "g4f": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "G4F Local (1058 Models, Keyless)",
+      "name": "G4F Local (Keyless, 17 Working Models)",
       "options": {
         "baseURL": "http://localhost:1337/v1"
       },
       "models": {
-        "gpt-4o-mini": { "name": "GPT-4o Mini (Working ✅)" },
+        "gpt-4o-mini": { "name": "GPT-4o Mini" },
         "gpt-4o": { "name": "GPT-4o" },
         "gpt-4": { "name": "GPT-4" },
-        "gpt-4.1": { "name": "GPT-4.1 (1M ctx)" },
-        "gpt-4.1-mini": { "name": "GPT-4.1 Mini (1M ctx)" },
         "o3-mini": { "name": "o3 Mini (Reasoning)" },
-        "o4-mini": { "name": "o4 Mini (Reasoning)" },
-        "claude-3.5-sonnet": { "name": "Claude 3.5 Sonnet" },
-        "claude-4-opus": { "name": "Claude 4 Opus" },
-        "claude-opus-4-6": { "name": "Claude Opus 4.6" },
-        "gemini-2.5-flash": { "name": "Gemini 2.5 Flash" },
-        "gemini-2.5-pro": { "name": "Gemini 2.5 Pro" },
-        "gemini-3.5-flash": { "name": "Gemini 3.5 Flash" },
-        "llama-3.3-70b": { "name": "Llama 3.3 70B" },
-        "llama-4-scout": { "name": "Llama 4 Scout" },
-        "llama-4-maverick": { "name": "Llama 4 Maverick" },
         "deepseek-r1": { "name": "DeepSeek R1" },
-        "deepseek-v3": { "name": "DeepSeek V3" },
-        "qwen-2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B (Coding)" },
-        "qwen-3-235b": { "name": "Qwen 3 235B" },
-        "grok-3": { "name": "Grok 3" },
-        "mistral-small-24b": { "name": "Mistral Small 24B" },
+        "deepseek": { "name": "DeepSeek" },
+        "deepseek-coder": { "name": "DeepSeek Coder" },
         "command-a": { "name": "Command A (111B)" },
-        "kimi-k2": { "name": "Kimi K2 (1T)" }
+        "command-a-03-2025": { "name": "Command A 03/2025" },
+        "command-r7b": { "name": "Command R7B" },
+        "command-r": { "name": "Command R" },
+        "command-r-plus": { "name": "Command R+" },
+        "gpt-5-thinking": { "name": "GPT-5 Thinking" },
+        "r1-1776": { "name": "R1-1776" },
+        "reasoning": { "name": "Reasoning" },
+        "perplexity": { "name": "Perplexity" },
+        "pplx_pro": { "name": "Perplexity Pro" },
+        "aria": { "name": "Aria" }
       }
     },
 
