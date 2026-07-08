@@ -1,11 +1,26 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
+  // Default agent
+  "default_agent": "build",
+
+  // Global instructions (loaded with AGENTS.md)
+  "instructions": ["AGENTS.md"],
+
   // Default model (G4F local keyless aggregator - 91+ models, no API key)
   "model": "g4f/gpt-4o-mini",
 
   // Lightweight tasks use a cheaper model
   "small_model": "g4f/gpt-4o-mini",
+
+  // === SKILL PERMISSIONS ===
+  // All skills in this config are safe to use
+  "permission": {
+    "skill": {
+      "*": "allow",
+      "experimental-*": "ask"
+    }
+  },
 
   // === MODEL FAILOVER CONFIG ===
   // When a model fails, use /switch-model or @model-router to auto-failover
