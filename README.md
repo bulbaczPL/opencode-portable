@@ -1,55 +1,71 @@
 # opencode-portable
 
-Przenośna konfiguracja **opencode** — 29 providerów AI, G4F keyless agregator (1058 modeli), 6-tier fallback chain. Zero API keys.
+**Zero API keys. 29 providerów. 1 komenda.**
+
+Przenośna konfiguracja [opencode CLI](https://opencode.ai) z keyless agregatorem G4F (1058 modeli), 6 keyless providerami (działają od razu), 23 darmowymi providerami (API key opcjonalnie) i token-free gateway (Claude/ChatGPT przez przeglądarkę).
 
 ## Szybki start
 
 ```bash
-# Opcja 1 (jeśli masz gh)
-curl -sL https://raw.githubusercontent.com/DevMike1993/opencode-portable/main/setup.sh | bash
-
-# Opcja 2 (bootstrap przez gist)
-bash <(curl -sL https://gist.githubusercontent.com/DevMike1993/49d0824bb8df221172c7901b6a650343/raw/setup.sh)
-
-# Opcja 3 (ręcznie)
-git clone https://github.com/DevMike1993/opencode-portable.git
-cd opencode-portable && bash setup.sh
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
 ```
 
-Jeśli `raw.githubusercontent.com` nie działa (znany problem dla tego konta), użyj opcji 2 lub 3.
-
-## Wymagania
-
-- Linux / WSL na Windows
-- Python 3, pip, Node.js, npm
-- Git
-- GitHub CLI (opcjonalnie, dla auto-pobierania)
-- Internet (pierwsza instalacja)
-
-Skrypt sam instaluje brakujące zależności.
+Skrypt sam instaluje wszystkie zależności (Python, Node.js, git, G4F, opencode CLI, config).
 
 ## Po instalacji
 
 ```bash
-# Sprawdź status
-opencode config
+# Wejdź w interfejs opencode (TUI)
+opencode
 
-# Uruchom G4F (jeśli nie startuje automatycznie)
-python3 -c "from g4f.api import run_api; run_api(port=1337)"
+# G4F uruchomi się automatycznie przez systemd
+# Sprawdź czy działa:
+curl -X POST http://localhost:1337/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}'
 
-# Aktualizuj
-cd ~/opencode-portable && git pull && bash setup.sh
+# Aktualizacja
+cd ~/opencode-portable && bash setup.sh
 ```
 
-## Komendy
+## 29 providerów
+
+### Keyless — działają od razu, bez klucza
+
+| Provider | Modele | Status |
+|----------|--------|-------|
+| G4F (lokalny) | 1058 modeli, 30+ providerów | ✅ zweryfikowany |
+| Pollinations.ai | GPT-OSS 20B | ✅ zweryfikowany |
+| ApiAirforce | Grok 4.1, Gemma 3, Step 3.5 Flash | ✅ zweryfikowany |
+| OVHcloud | Llama 3.3, Mistral, Qwen 3.6 | ✅ zweryfikowany |
+| KeylessAI | GPT-OSS, Grok 4.1 | ⚠️ niestabilny DNS |
+| LLM7.io | DeepSeek, GPT-4o mini, Mistral | ⚠️ niestabilny |
+| AI Horde | Llama 3.3, Gemma 4 | społecznościowy |
+
+### Z darmowym kluczem (no credit card)
+
+Groq, Cerebras, Mistral, NVIDIA NIM, OpenRouter, Cloudflare Workers, Together AI, SambaNova, Hugging Face, GitHub Models, DeepSeek, Scaleway, Cohere, SiliconFlow, Z.AI, Kilo Code, ModelScope, DashScope, Ollama Cloud, FreeTheAi, Aion Labs, Token-Free Gateway
+
+### Komendy
 
 | Komenda | Opis |
 |---------|------|
 | `/status` | Status providerów i modeli |
-| `/switch-model` | Ręczna zmiana modelu |
+| `/switch-model` | Zmień model ręcznie |
 | `/fallback-chain` | Pokaż chain failover |
 | `/auto-failover` | Włącz/wyłącz auto-failover |
 | `/g4f-start` | Uruchom G4F agregator |
+
+## Wymagania
+
+- Linux / WSL
+- Internet (tylko pierwsza instalacja)
+
+Resztę instaluje skrypt.
+
+## Model fallback
+
+Gdy model nie odpowiada, automatycznie przełącza przez 6-tier chain: G4F (lokalny) → Pollinations → ApiAirforce → OVHcloud → openrouter (free) → z darmowym kluczem.
 
 ## Licencja
 
