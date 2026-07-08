@@ -147,7 +147,7 @@ test_g4f() {
 
 summary() {
   local pc=0
-  [ -f "$CONFIG_DIR/opencode.jsonc" ] && pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('providers',{})))" 2>/dev/null || echo "0")
+  [ -f "$CONFIG_DIR/opencode.jsonc" ] && pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null || echo "0")
   local v=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "?")
   echo ""
   echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"
