@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #=============================================================================
 # opencode-portable — self-installing, self-updating opencode config
-# Repo: https://github.com/DevMike1993/opencode-portable
+# Repo: https://github.com/bulbaczPL/opencode-portable
 #
 # Usage:
 #   bash <(curl -sL https://git.io/opencode-portable)
@@ -13,7 +13,7 @@
 #=============================================================================
 set -euo pipefail
 
-REPO="DevMike1993/opencode-portable"
+REPO="bulbaczPL/opencode-portable"
 REPO_URL="https://github.com/$REPO.git"
 INSTALL_DIR="$HOME/opencode-portable"
 CONFIG_DIR="$HOME/.config/opencode"
@@ -54,10 +54,14 @@ do_update() {
     fi
     cd - > /dev/null
   else
-    # Pierwsza instalacja — pobierz przez gh
-    ensure_gh
-    log "Pobieram pliki z GitHub..."
-    gh repo clone "$REPO" "$INSTALL_DIR" 2>&1 | tail -1
+    # Pierwsza instalacja — pobierz przez gh lub git clone
+    if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+      log "Pobieram pliki z GitHub (gh)..."
+      gh repo clone "$REPO" "$INSTALL_DIR" 2>&1 | tail -1
+    else
+      log "Pobieram pliki z GitHub (git clone)..."
+      git clone "https://github.com/$REPO.git" "$INSTALL_DIR" 2>&1 | tail -1
+    fi
     ok "Pobrano pliki"
   fi
 }
@@ -95,7 +99,7 @@ ensure_gh() {
 
   # Zaloguj
   log "Logowanie do GitHub (wymagane do pobrania plików)..."
-  warn "Konto DevMike1993 ma ograniczony anonimowy dostęp."
+  # Repo publiczne, gh nie jest wymagane — można użyć curl z raw.githubusercontent.com
   log "Zaloguj się przez przeglądarkę:"
   gh auth login --web 2>&1
 
