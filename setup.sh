@@ -79,6 +79,14 @@ install_deps() {
             [ "$cmd" = "git" ] && echo "git: $(git --version | awk '{print $3}')")"
     else
       case "$cmd" in
+        python3)
+          log "Instaluję Python 3..."
+          apt-get install -y python3 python3-pip >/dev/null 2>&1
+          ok "Python: $(python3 --version)"
+          ;;
+        pip3)
+          # pip3 już doinstalowany z python3
+          ;;
         node|npm)
           log "Instaluję Node.js..."
           curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &>/dev/null
@@ -90,8 +98,8 @@ install_deps() {
           ok "git zainstalowany"
           ;;
         *)
-          fail "$cmd wymagany. Zainstaluj: sudo apt install $cmd"
-          return 1
+          log "$cmd wymagany. Instaluję..."
+          apt-get install -y "$cmd" >/dev/null 2>&1 && ok "$cmd zainstalowany"
           ;;
       esac
     fi
