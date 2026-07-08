@@ -112,7 +112,7 @@ install_opencode() {
 install_g4f() {
   log "Sprawdzam G4F..."
   python3 -c "import g4f" &>/dev/null 2>&1 \
-    && ok "G4F: $(python3 -c "import g4f; print(f'v{g4f.__version__}')" 2>/dev/null || echo 'zainstalowany')" \
+    && ok "G4F: $(python3 -c "import g4f; print(f'v{g4f.__version__}')" 2>/dev/null || python3 -c "import importlib.metadata; print(importlib.metadata.version('g4f'))" 2>/dev/null || echo 'zainstalowany')" \
     || { pip3 install --break-system-packages g4f 2>&1 | tail -1 && ok "G4F zainstalowany"; }
 }
 
@@ -145,15 +145,20 @@ test_g4f() {
 }
 
 summary() {
-  local pc=0
-  [ -f "$CONFIG_DIR/opencode.jsonc" ] && pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null || echo "0")
   local v=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "?")
+  local pc="?"
+  if [ -f "$CONFIG_DIR/opencode.jsonc" ]; then
+    pip3 install --break-system-packages json5 -q 2>/dev/null || true
+    pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null || echo "?")
+  fi
+  local ok="OK"
+  command -v opencode &>/dev/null || ok="brak"
   echo ""
   echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"
   echo -e "${GREEN}║  opencode-portable v$v                                ║${NC}"
   echo -e "${GREEN}╚══════════════════════════════════════════════════════╝${NC}"
   echo "  G4F:    $(systemctl --user is-active g4f.service 2>/dev/null || echo 'ręcznie')"
-  echo "  opencode: $(command -v opencode &>/dev/null && echo 'OK' || echo 'brak')"
+  echo "  opencode: $ok"
   echo "  Providerów: $pc"
   echo "  Aktualizacja: cd ~/opencode-portable && bash setup.sh"
   echo ""
