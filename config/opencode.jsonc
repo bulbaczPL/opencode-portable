@@ -26,7 +26,7 @@
   // When a model fails, use /switch-model or @model-router to auto-failover
   // through the fallback chain of 28 free models
 
-  // === FREE AI PROVIDERS (2026 - 26 providers, 100+ models) ===
+  // === FREE AI PROVIDERS (2026 - ~26 providers, 100+ models) ===
   // API keys: add via /connect command in TUI (except keyless providers)
   // Keyless providers work immediately without any key
 
@@ -49,8 +49,9 @@
       }
     },
 
-    // ─── 2. ApiAirforce (KEYLESS - VERIFIED WORKS) ────────────────────
-    // No API key required! Free tier with 1 req/s rate limit. Tested ✅
+    // ─── 2. ApiAirforce (REQUIRES AUTH - NOT KEYLESS) ────────────────
+    // Previously keyless, now requires API key. :free models need auth.
+    // Falls back to other keyless providers.
     "apiairforce": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "ApiAirforce (Keyless)",
@@ -67,17 +68,23 @@
       }
     },
 
-    // ─── 3. KeylessAI (KEYLESS - DNS UNRELIABLE) ──────────────────────
-    // No API key required. May have DNS issues. Falls back to Pollinations/ApiAirforce
-    "keylessai": {
+    // ─── 3. Kilo Gateway (KEYLESS - VERIFIED WORKS ✅) ─────────────────
+    // No API key required for :free models. 200 req/hr/IP. Tested ✅
+    "kilo": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "KeylessAI (Keyless - unstable)",
+      "name": "Kilo Gateway (Keyless)",
       "options": {
-        "baseURL": "https://keylessai.thryx.workers.dev/v1"
+        "baseURL": "https://api.kilo.ai/api/gateway"
       },
       "models": {
-        "openai-fast": { "name": "GPT-OSS 20B (Keyless)" },
-        "grok-4.1-mini": { "name": "Grok 4.1 Mini (Keyless)" }
+        "kilo-auto/free": { "name": "Kilo Auto Free (auto-routed)" },
+        "tencent/hy3:free": { "name": "Tencent Hunyuan 3" },
+        "stepfun/step-3.7-flash:free": { "name": "Step 3.7 Flash" },
+        "nvidia/nemotron-3-ultra-550b-a55b:free": { "name": "Nemotron 3 Ultra 550B" },
+        "nvidia/nemotron-3-super-120b-a12b:free": { "name": "Nemotron 3 Super 120B" },
+        "poolside/laguna-m.1:free": { "name": "Poolside Laguna M.1" },
+        "cohere/north-mini-code:free": { "name": "Cohere North Mini Code" },
+        "openrouter/free": { "name": "OpenRouter Auto-Free" }
       }
     },
 
@@ -102,35 +109,18 @@
       }
     },
 
-    // ─── 4. LLM7.io (KEYLESS - DNS UNRELIABLE) ─────────────────────────
-    // No registration needed. Tested: DNS timeout (000), may come back later
-    "llm7": {
+    // ─── 6. smanx free-api (KEYLESS - UPSTREAM UNSTABLE) ────────────
+    // Public keyless endpoint using shared API key. Re-emerged 2026.
+    // Note: upstream sometimes 502/503, acts as last-resort fallback
+    "smanxfree": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "LLM7.io (Keyless - unstable)",
+      "name": "smanx Free API (Keyless)",
       "options": {
-        "baseURL": "https://api.llm7.io/v1"
+        "baseURL": "https://openai.good.hidns.vip/v1"
       },
       "models": {
-        "deepseek-r1-0528": { "name": "DeepSeek R1" },
-        "deepseek-v3-0324": { "name": "DeepSeek V3" },
-        "gpt-4o-mini": { "name": "GPT-4o Mini" },
-        "mistral-small-3.1-24b": { "name": "Mistral Small 3.1 24B" },
-        "qwen2.5-coder-32b": { "name": "Qwen 2.5 Coder 32B" }
-      }
-    },
-
-    // ─── 6. AI Horde (FREE COMMUNITY - NEEDS KEY "0000000000") ────────
-    // Anonymous key: "0000000000". Free community-powered commons
-    "aihorde": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "AI Horde (Community)",
-      "options": {
-        "baseURL": "https://aihorde.net/api/v2"
-      },
-      "models": {
-        "koboldcpp/llama-3.3-70b": { "name": "Llama 3.3 70B (Community)" },
-        "koboldcpp/gemma-4-31b": { "name": "Gemma 4 31B (Community)" },
-        "koboldcpp/mistral-small-3.1": { "name": "Mistral Small 3.1 (Community)" }
+        "gpt-5.2": { "name": "GPT-5.2 (unstable)" },
+        "gpt-4o": { "name": "GPT-4o (unstable)" }
       }
     },
 
@@ -427,24 +417,9 @@
       }
     },
 
-    // ─── 22. Kilo Code ────────────────────────────────────────────────────
-    // Free models, no credit card | Auto-router with free fallback
-    // Sign up: https://kilo.ai
-    "kilo": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Kilo Code (Free)",
-      "options": {
-        "baseURL": "https://api.kilo.ai/api/gateway"
-      },
-      "models": {
-        "x-ai/grok-code-fast-1:free": { "name": "Grok Code Fast 1 (Free)" },
-        "minimax/minimax-m2.5:free": { "name": "MiniMax M2.5 (Free)" },
-        "nvidia/nemotron-3-super-120b-a12b:free": { "name": "Nemotron 3 Super 120B (Free)" },
-        "arcee-ai/trinity-large-thinking:free": { "name": "Trinity Large Thinking (Free)" },
-        "bytedance-seed/dola-seed-2.0-pro:free": { "name": "Dola Seed 2.0 Pro (Free)" },
-        "openrouter/free": { "name": "OpenRouter Auto-Free" }
-      }
-    },
+    // ─── 22. Aion Labs ─────────────────────────────────────────────────
+    // Specialized for roleplay/storytelling | 15 RPM, 20K tokens/day
+    // Sign up: https://www.aionlabs.ai
 
     // ─── 23. ModelScope ──────────────────────────────────────────────────
     // Free: 2,000 requests/day for registered users (Alibaba Cloud binding)

@@ -1,6 +1,6 @@
 # opencode-portable — Zasady dla agenta
 
-Jesteś agentem opencode działającym na konfiguracji **opencode-portable**. Masz dostęp do 29 providerów AI, w tym 6 keyless (bez klucza API). Poniższe zasady określają jak masz działać.
+Jesteś agentem opencode działającym na konfiguracji **opencode-portable**. Masz dostęp do ~26 providerów AI, w tym 4 keyless (bez klucza API). Poniższe zasady określają jak masz działać.
 
 ## 1. Priorytet providerów
 
@@ -8,24 +8,23 @@ Zawsze używaj providerów w tej kolejności:
 
 1. **G4F (lokalny, keyless)** — `g4f/gpt-4o-mini` (domyślny). Jeśli nie działa, spróbuj go uruchomić przez `/g4f-start` lub `python3 -c "from g4f.api import run_api; run_api(port=1337)"`.
 2. **Pollinations.ai (keyless)** — `pollinations/openai`
-3. **ApiAirforce (keyless)** — `apiairforce/openai`
-4. **OVHcloud (keyless)** — `ovhcloud/Mistral-7B-Instruct-v0.3`
+3. **Kilo Gateway (keyless)** — `kilo/kilo-auto/free`
+4. **OVHcloud (keyless)** — `ovhcloud/Mistral-7B-Instruct-v0.3` (2 RPM bez klucza)
 5. **OpenRouter free** — `openrouter/*:free`
 6. **Darmowe z kluczem** (Groq, Cerebras, Mistral, NVIDIA, itd.)
-7. **AI Horde (społecznościowy)**
 
 ## 2. G4F — zarządzanie
 
 - G4F działa na `http://localhost:1337/v1`
 - Uruchom przez: `systemctl --user start g4f.service` lub `python3 -c "from g4f.api import run_api; run_api(port=1337)"`
 - Jeśli G4F nie odpowiada, sprawdź: `curl -X POST http://localhost:1337/v1/chat/completions -H "Content-Type: application/json" -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}'`
-- Jeśli G4F nie chce wystartować, przełącz na keyless providerów bezpośrednich (Pollinations, ApiAirforce, OVHcloud)
+- Jeśli G4F nie chce wystartować, przełącz na keyless providerów bezpośrednich (Pollinations, Kilo, OVHcloud)
 
 ## 3. Failover chain
 
 Gdy model nie odpowiada (rate limit, timeout, auth error, pusty response):
 1. Zanotuj który provider/model zawiódł
-2. Przejdź do następnego w chain: G4F → Pollinations → ApiAirforce → OVHcloud → OpenRouter free → z kluczem
+2. Przejdź do następnego w chain: G4F → Pollinations → Kilo → OVHcloud → OpenRouter free → z kluczem
 3. Poinformuj użytkownika o przełączeniu
 4. Wznów zadanie na nowym modelu
 
