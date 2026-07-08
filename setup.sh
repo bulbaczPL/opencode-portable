@@ -70,40 +70,27 @@ do_update() {
 #=============================================================================
 install_deps() {
   log "Sprawdzam zależności..."
-  for cmd in python3 pip3 node npm git; do
-    if command -v "$cmd" &>/dev/null; then
-      ok "$([ "$cmd" = "python3" ] && echo "Python: $(python3 --version)" || \
-            [ "$cmd" = "pip3" ] && echo "pip: $(pip3 --version | awk '{print $2}')" || \
-            [ "$cmd" = "node" ] && echo "Node.js: $(node --version)" || \
-            [ "$cmd" = "npm" ] && echo "npm: $(npm --version)" || \
-            [ "$cmd" = "git" ] && echo "git: $(git --version | awk '{print $3}')")"
-    else
-      case "$cmd" in
-        python3)
-          log "Instaluję Python 3..."
-          apt-get install -y python3 python3-pip >/dev/null 2>&1
-          ok "Python: $(python3 --version)"
-          ;;
-        pip3)
-          # pip3 już doinstalowany z python3
-          ;;
-        node|npm)
-          log "Instaluję Node.js..."
-          curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &>/dev/null
-          apt-get install -y nodejs &>/dev/null
-          ok "Node.js: $(node --version)"
-          ;;
-        git)
-          apt-get install -y git &>/dev/null
-          ok "git zainstalowany"
-          ;;
-        *)
-          log "$cmd wymagany. Instaluję..."
-          apt-get install -y "$cmd" >/dev/null 2>&1 && ok "$cmd zainstalowany"
-          ;;
-      esac
-    fi
-  done
+
+  if ! command -v python3 &>/dev/null; then
+    log "Instaluję Python 3..."
+    apt-get install -y python3 python3-pip >/dev/null 2>&1
+  fi
+  ok "Python: $(python3 --version)"
+  ok "pip: $(pip3 --version | awk '{print $2}')"
+
+  if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+    log "Instaluję Node.js..."
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &>/dev/null
+    apt-get install -y nodejs >/dev/null 2>&1
+  fi
+  ok "Node.js: $(node --version)"
+  ok "npm: $(npm --version)"
+
+  if ! command -v git &>/dev/null; then
+    log "Instaluję git..."
+    apt-get install -y git >/dev/null 2>&1
+  fi
+  ok "git: $(git --version | awk '{print $3}')"
 }
 
 #=============================================================================
@@ -111,8 +98,12 @@ install_deps() {
 #=============================================================================
 install_opencode() {
   log "Sprawdzam opencode..."
-  command -v opencode &>/dev/null && ok "opencode: $(opencode --version 2>/dev/null || echo 'zainstalowany')" \
-    || { npm install -g @opencode/cli 2>&1 | tail -1 && ok "opencode CLI zainstalowany"; }
+  if command -v opencode &>/dev/null; then
+    ok "opencode: $(opencode --version 2>/dev/null || echo 'zainstalowany')"
+  else
+    npm install -g @opencode-ai/cli 2>&1 | tail -3
+    ok "opencode CLI zainstalowany"
+  fi
 }
 
 #=============================================================================
