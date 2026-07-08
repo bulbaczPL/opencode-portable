@@ -4,13 +4,163 @@
 
 Portable [opencode CLI](https://opencode.ai) configuration with G4F keyless aggregator, 6 direct keyless providers, 23 free-tier providers (API key optional), 3 agent skills, 8 custom commands, and intelligent model failover.
 
-## Quick start
+---
+
+**🌐 README in your language:**
+
+[🇵🇱 Polski](#polski) · [🇬🇧 English](#english) · [🇩🇪 Deutsch](#deutsch) · [🇫🇷 Français](#français) · [🇪🇸 Español](#español) · [🇮🇹 Italiano](#italiano) · [🇵🇹 Português](#português) · [🇷🇺 Русский](#русский) · [🇨🇳 中文](#中文) · [🇯🇵 日本語](#日本語)
+
+---
+
+<a id="polski"></a>
+## 🇵🇱 Polski
+
+**Zero kluczy API. 29 providerów AI. 1 komenda.**
 
 ```bash
 curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
 ```
 
-The script auto-installs Python, Node.js, git, G4F, opencode CLI, and all config. Works on clean systems — only `curl` required.
+Przenośna konfiguracja opencode z G4F agregatorem (1058 modeli), 6 keyless providerami (działają od razu), 23 darmowymi (klucz opcjonalny), 3 skillami, 8 komendami i inteligentnym failoverem.
+
+[⬆ Powrót na górę](#opencode-portable)
+
+---
+
+<a name="english"></a>
+## 🇬🇧 English
+
+**Zero API keys. 29 AI providers. 1 command.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Portable opencode CLI configuration with G4F keyless aggregator (1058 models), 6 direct keyless providers, 23 free-tier (API key optional), 3 agent skills, 8 custom commands, and intelligent model failover.
+
+[⬆ Back to top](#opencode-portable)
+
+---
+
+<a name="deutsch"></a>
+## 🇩🇪 Deutsch
+
+**Keine API-Schlüssel. 29 KI-Anbieter. 1 Befehl.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Tragbare opencode-Konfiguration mit G4F-Aggregator (1058 Modelle), 6 schlüssellosen Anbietern, 23 kostenlosen Anbietern (API-Schlüssel optional), 3 Skills, 8 Befehlen und intelligentem Failover.
+
+[⬆ Nach oben](#opencode-portable)
+
+---
+
+<a name="français"></a>
+## 🇫🇷 Français
+
+**Zéro clé API. 29 fournisseurs IA. 1 commande.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Configuration portable opencode avec agrégateur G4F (1058 modèles), 6 fournisseurs sans clé, 23 fournisseurs gratuits (clé API optionnelle), 3 compétences, 8 commandes et basculement intelligent.
+
+[⬆ Haut de page](#opencode-portable)
+
+---
+
+<a name="español"></a>
+## 🇪🇸 Español
+
+**Cero claves API. 29 proveedores IA. 1 comando.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Configuración portátil de opencode con agregador G4F (1058 modelos), 6 proveedores sin clave, 23 gratuitos (clave API opcional), 3 habilidades, 2 comandos y failover inteligente.
+
+[⬆ Volver arriba](#opencode-portable)
+
+---
+
+<a name="italiano"></a>
+## 🇮🇹 Italiano
+
+**Zero chiavi API. 29 provider IA. 1 comando.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Configurazione portatile opencode con aggregatore G4F (1058 modelli), 6 provider senza chiave, 23 gratuiti (chiave API opzionale), 3 skill, 2 agenti e failover intelligente.
+
+[⬆ Torna su](#opencode-portable)
+
+---
+
+<a name="português"></a>
+## 🇵🇹 Português
+
+**Zero chaves de API. 29 provedores IA. 1 comando.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Configuração portátil opencode com agregador G4F (1058 modelos), 6 provedores sem chave, 23 gratuitos (chave API opcional), 3 habilidades e failover inteligente.
+
+[⬆ Voltar ao topo](#opencode-portable)
+
+---
+
+<a name="русский"></a>
+## 🇷🇺 Русский
+
+**Ноль ключей API. 29 AI-провайдеров. 1 команда.**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+Портативная конфигурация opencode с G4F агрегатором (1058 моделей), 6 провайдерами без ключа, 23 бесплатными (ключ опционально), 3 навыками, 2 агентами и интеллектуальным переключением.
+
+[⬆ Вверх](#opencode-portable)
+
+---
+
+<a name="中文"></a>
+## 🇨🇳 中文
+
+**零API密钥。29个AI提供商。1条命令。**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+便携式opencode配置，包含G4F聚合器（1058个模型）、6个无需密钥的提供商、23个免费提供商（可选API密钥）、3个技能、2个代理和智能故障转移。
+
+[⬆ 返回顶部](#opencode-portable)
+
+---
+
+<a name="日本語"></a>
+## 🇯🇵 日本語
+
+**APIキー不要。29のAIプロバイダー。1つのコマンド。**
+
+```bash
+curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash
+```
+
+G4Fアグリゲーター（1058モデル）、6つのキーレスプロバイダー、23の無料プロバイダー（APIキー任意）、3つのスキル、2つのエージェントを備えたポータブルopencode設定。
+
+[⬆ トップへ戻る](#opencode-portable)
+
+---
 
 ## 29 providers
 
@@ -52,7 +202,7 @@ Groq · Cerebras · Mistral · NVIDIA NIM · OpenRouter · Cloudflare Workers ·
 | `keyless-providers` | All 6 keyless providers, rate limits, reliability |
 | `provider-registration` | Step-by-step guide for 23 registration processes |
 
-## Subagent
+## Subagents
 
 | Agent | Role | Permissions |
 |-------|------|-------------|
@@ -72,23 +222,6 @@ Specialized (Cohere → DashScope → Z.AI → Kilo → SiliconFlow …)
   ↓
 Community (AI Horde → FreeTheAi → Aion Labs)
 ```
-
----
-
-## Szybki start / Quick start
-
-- **PL:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **EN:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **DE:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **FR:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **ES:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **IT:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **PT:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **RU:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **ZH:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-- **JA:** `curl -sL https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh | bash`
-
-> One command works in every language.
 
 ## Requirements
 
