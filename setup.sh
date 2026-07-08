@@ -54,61 +54,16 @@ do_update() {
     fi
     cd - > /dev/null
   else
-    # Pierwsza instalacja — pobierz przez gh lub git clone
-    if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
-      log "Pobieram pliki z GitHub (gh)..."
-      gh repo clone "$REPO" "$INSTALL_DIR" 2>&1 | tail -1
-    else
-      log "Pobieram pliki z GitHub (git clone)..."
-      git clone "https://github.com/$REPO.git" "$INSTALL_DIR" 2>&1 | tail -1
-    fi
+    # Pierwsza instalacja — curl z raw (nie wymaga git/gh na czystym systemie)
+    log "Pobieram pliki z GitHub (curl)..."
+    mkdir -p "$INSTALL_DIR"
+    TAR_URL="https://api.github.com/repos/$REPO/tarball/main"
+    curl -sL "$TAR_URL" | tar xz --strip-components=1 -C "$INSTALL_DIR" 2>&1
     ok "Pobrano pliki"
   fi
 }
 
-#=============================================================================
-# Zapewnij gh
-#=============================================================================
-ensure_gh() {
-  if command -v gh &>/dev/null; then
-    if gh auth status &>/dev/null 2>&1; then
-      ok "gh: $(gh --version | head -1 | awk '{print $3}')"
-      log "Konto: $(gh api user --jq '.login')"
-      return 0
-    fi
-  fi
 
-  # Instaluj gh
-  log "Instaluję GitHub CLI..."
-  if command -v apt &>/dev/null; then
-    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg 2>/dev/null \
-      | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null || true
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
-      | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-    apt-get update -qq && apt-get install -y -qq gh 2>/dev/null | tail -1
-    ok "gh zainstalowany"
-  else
-    # npm jako fallback
-    npm install -g gh 2>/dev/null | tail -1 || true
-  fi
-
-  if ! command -v gh &>/dev/null; then
-    fail "Nie udało się zainstalować gh. Zainstaluj ręcznie: https://cli.github.com"
-    exit 1
-  fi
-
-  # Zaloguj
-  log "Logowanie do GitHub (wymagane do pobrania plików)..."
-  # Repo publiczne, gh nie jest wymagane — można użyć curl z raw.githubusercontent.com
-  log "Zaloguj się przez przeglądarkę:"
-  gh auth login --web 2>&1
-
-  if ! gh auth status &>/dev/null 2>&1; then
-    fail "Logowanie nie powiodło się."
-    exit 1
-  fi
-  ok "Zalogowano jako $(gh api user --jq '.login')"
-}
 
 #=============================================================================
 # ZALEŻNOŚCI
@@ -192,7 +147,7 @@ test_g4f() {
 
 summary() {
   local pc=0
-  python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null | read pc
+  [ -f "$CONFIG_DIR/opencode.jsonc" ] && pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('providers',{})))" 2>/dev/null || echo "0")
   local v=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "?")
   echo ""
   echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"
@@ -211,8 +166,8 @@ main() {
   echo -e "${CYAN}║  opencode-portable — Instalator / Aktualizator      ║${NC}"
   echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
   echo ""
-  do_update
   install_deps || exit 1
+  do_update
   install_opencode
   install_g4f
   setup_config
