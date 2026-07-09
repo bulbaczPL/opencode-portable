@@ -11,15 +11,15 @@
 </p>
 
 <p align="center">
-  <a href="#polski"><img src="https://img.shields.io/badge/🇵🇱-Polski-gray?style=flat-square" alt="polski"></a>
-  <a href="#deutsch"><img src="https://img.shields.io/badge/🇩🇪-Deutsch-gray?style=flat-square" alt="deutsch"></a>
-  <a href="#francais"><img src="https://img.shields.io/badge/🇫🇷-Français-gray?style=flat-square" alt="français"></a>
-  <a href="#espanol"><img src="https://img.shields.io/badge/🇪🇸-Español-gray?style=flat-square" alt="español"></a>
-  <a href="#italiano"><img src="https://img.shields.io/badge/🇮🇹-Italiano-gray?style=flat-square" alt="italiano"></a>
-  <a href="#portugues"><img src="https://img.shields.io/badge/🇵🇹-Português-gray?style=flat-square" alt="português"></a>
-  <a href="#russkiy"><img src="https://img.shields.io/badge/🇷🇺-Русский-gray?style=flat-square" alt="русский"></a>
-  <a href="#zhongwen"><img src="https://img.shields.io/badge/🇨🇳-中文-gray?style=flat-square" alt="中文"></a>
-  <a href="#nihongo"><img src="https://img.shields.io/badge/🇯🇵-日本語-gray?style=flat-square" alt="日本語"></a>
+  <a href="README.pl.md"><img src="https://img.shields.io/badge/🇵🇱-Polski-gray?style=flat-square" alt="polski"></a>
+  <a href="README.de.md"><img src="https://img.shields.io/badge/🇩🇪-Deutsch-gray?style=flat-square" alt="deutsch"></a>
+  <a href="README.fr.md"><img src="https://img.shields.io/badge/🇫🇷-Français-gray?style=flat-square" alt="français"></a>
+  <a href="README.es.md"><img src="https://img.shields.io/badge/🇪🇸-Español-gray?style=flat-square" alt="español"></a>
+  <a href="README.it.md"><img src="https://img.shields.io/badge/🇮🇹-Italiano-gray?style=flat-square" alt="italiano"></a>
+  <a href="README.pt.md"><img src="https://img.shields.io/badge/🇵🇹-Português-gray?style=flat-square" alt="português"></a>
+  <a href="README.ru.md"><img src="https://img.shields.io/badge/🇷🇺-Русский-gray?style=flat-square" alt="русский"></a>
+  <a href="README.zh.md"><img src="https://img.shields.io/badge/🇨🇳-中文-gray?style=flat-square" alt="中文"></a>
+  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-日本語-gray?style=flat-square" alt="日本語"></a>
 </p>
 
 <p align="center">
