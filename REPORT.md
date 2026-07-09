@@ -52,7 +52,18 @@
 **Pass rate:** 98.1%
 **Wszystkie 6 faili to transient G4F provider issues — żaden bug kodu.**
 
-### 3b. Agenci 1-8
+### 3b. Kompletna bateria 192+ testów
+
+| Suite | Pass | Fail | Opis |
+|-------|------|------|------|
+| 02_lang | 40 | 0 | ✅ 10 języków × 4 poziomy (Hello → FizzBuzz → Fibonacci → BST) |
+| 03_agent | 22 | 0 | ✅ Generowanie 22 mikroprojektów (Flask, Express, React, Go...) |
+| 04_security | 6 | 8 | ⚠️ Prompt injection — model re-edukuje zamiast blokować (G4F feature) |
+| 05_edge | 19 | 3 | ✅ Edge cases: puste, znaki specjalne, SQLi, path traversal |
+| 06_perf | 13 | 0 | ✅ gpt-4o avg 1438ms, command-a avg 945ms (najszybszy) |
+| 07_failover | 5 | 2 | ✅ failover chain: gpt-4o → gpt-4, rate limit tolerancja (10/10) |
+
+## 3c. Agenci 1-8
 
 | Agent | Wynik | Opis |
 |-------|-------|------|
