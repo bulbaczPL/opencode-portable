@@ -14,7 +14,8 @@
 set -euo pipefail
 
 REPO="bulbaczPL/opencode-portable"
-REPO_URL="https://github.com/$REPO.git"
+# shellcheck disable=SC2034
+REPO_URL="https://github.com/bulbaczPL/opencode-portable.git"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/opencode-portable}"
 CONFIG_DIR="$HOME/.config/opencode"
 SYSTEMD_DIR="$HOME/.config/systemd/user"
@@ -130,9 +131,16 @@ install_opencode() {
 #=============================================================================
 install_g4f() {
   log "Sprawdzam G4F..."
-  python3 -c "import g4f" &>/dev/null 2>&1 \
-    && ok "G4F: $(python3 -c "import importlib.metadata; print(importlib.metadata.version('g4f'))" 2>/dev/null || echo 'zainstalowany')" \
-    || { pip3 install --break-system-packages g4f 2>&1 | tail -1 && ok "G4F zainstalowany"; }
+  if python3 -c "import g4f" &>/dev/null 2>&1; then
+    local g4f_ver
+    g4f_ver=$(python3 -c "import importlib.metadata; print(importlib.metadata.version('g4f'))" 2>/dev/null || echo "zainstalowany")
+    ok "G4F: $g4f_ver"
+  else
+    pip3 install --break-system-packages g4f 2>&1 | tail -1
+    # Also install python-multipart for G4F API startup
+    pip3 install --break-system-packages python-multipart -q 2>/dev/null || true
+    ok "G4F zainstalowany"
+  fi
 }
 
 #=============================================================================
@@ -142,22 +150,35 @@ setup_config() {
   log "Konfiguruję opencode..."
   mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/agents" "$CONFIG_DIR/commands" "$CONFIG_DIR/skills"
 
-  # Główny config
-  cp "$INSTALL_DIR/config/opencode.jsonc" "$CONFIG_DIR/opencode.jsonc" 2>/dev/null && ok "config skopiowany"
+  # Główny config — -n = nie nadpisuj (bezpieczne dla user configu)
+  cp -n "$INSTALL_DIR/config/opencode.jsonc" "$CONFIG_DIR/opencode.jsonc" 2>/dev/null && ok "config skopiowany" || ok "config już istnieje"
 
   # AGENTS.md (globalne instrukcje)
-  cp "$INSTALL_DIR/config/AGENTS.md" "$CONFIG_DIR/AGENTS.md" 2>/dev/null && ok "AGENTS.md skopiowany" || true
+  if [ -f "$INSTALL_DIR/config/AGENTS.md" ]; then
+    cp "$INSTALL_DIR/config/AGENTS.md" "$CONFIG_DIR/AGENTS.md" 2>/dev/null || true
+    ok "AGENTS.md skopiowany"
+  fi
 
-  # Agenci (backward compat: najpierw config/agents, potem agents/)
+  # Agenci
   local agent_count=0
-  cp "$INSTALL_DIR/config/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null && agent_count=$(ls "$CONFIG_DIR/agents/"*.md 2>/dev/null | wc -l) || true
-  cp "$INSTALL_DIR/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null && agent_count=$(ls "$CONFIG_DIR/agents/"*.md 2>/dev/null | wc -l) || true
+  if ls "$INSTALL_DIR/config/agents/"*.md >/dev/null 2>&1; then
+    cp "$INSTALL_DIR/config/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null || true
+  fi
+  if ls "$INSTALL_DIR/agents/"*.md >/dev/null 2>&1; then
+    cp "$INSTALL_DIR/agents/"*.md "$CONFIG_DIR/agents/" 2>/dev/null || true
+  fi
+  agent_count=$(find "$CONFIG_DIR/agents/" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
   ok "agenty: $agent_count"
 
-  # Komendy (backward compat: najpierw config/commands/, potem commands/)
+  # Komendy
   local cmd_count=0
-  cp "$INSTALL_DIR/config/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null && cmd_count=$(ls "$CONFIG_DIR/commands/"*.md 2>/dev/null | wc -l) || true
-  cp "$INSTALL_DIR/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null && cmd_count=$(ls "$CONFIG_DIR/commands/"*.md 2>/dev/null | wc -l) || true
+  if ls "$INSTALL_DIR/config/commands/"*.md >/dev/null 2>&1; then
+    cp "$INSTALL_DIR/config/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null || true
+  fi
+  if ls "$INSTALL_DIR/commands/"*.md >/dev/null 2>&1; then
+    cp "$INSTALL_DIR/commands/"*.md "$CONFIG_DIR/commands/" 2>/dev/null || true
+  fi
+  cmd_count=$(find "$CONFIG_DIR/commands/" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
   ok "komendy: $cmd_count"
 
   # Skille (kopiuj całe katalogi)
@@ -166,31 +187,37 @@ setup_config() {
     [ -d "$skill_dir" ] || continue
     local name
     name=$(basename "$skill_dir")
-    cp -r "$skill_dir" "$CONFIG_DIR/skills/$name" 2>/dev/null && skill_count=$((skill_count + 1)) || true
+    cp -r "$skill_dir" "$CONFIG_DIR/skills/$name" 2>/dev/null || true
+    skill_count=$((skill_count + 1))
   done
-  [ "$skill_count" -gt 0 ] && ok "skille: $skill_count" || true
+  if [ "$skill_count" -gt 0 ]; then
+    ok "skille: $skill_count"
+  fi
 }
 
 setup_systemd() {
   log "Konfiguruję G4F service..."
   local PYTHON_PATH
-  PYTHON_PATH=$(which python3 2>/dev/null || echo "python3")
+  PYTHON_PATH=$(command -v python3 2>/dev/null || echo "python3")
   mkdir -p "$SYSTEMD_DIR"
   sed "s|__PYTHON_PATH__|$PYTHON_PATH|g" "$INSTALL_DIR/systemd/g4f.service" > "$SYSTEMD_DIR/g4f.service"
   systemctl --user daemon-reload 2>/dev/null || { warn "systemd nie dostępny"; return; }
-  systemctl --user enable --now g4f.service 2>/dev/null && ok "G4F aktywny" || warn "G4F: restart"
+  if systemctl --user enable --now g4f.service 2>/dev/null; then
+    ok "G4F aktywny"
+  else
+    warn "G4F: restart"
+  fi
 }
 
 test_g4f() {
   sleep 3
   local result
-  result=$(curl -sf -X POST \
+  result=$(curl -sf --max-time 10 -X POST \
     "http://localhost:1337/v1/chat/completions" \
     -H "Content-Type: application/json" \
     -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}' 2>/dev/null)
-  local curl_exit=$?
   if echo "$result" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['choices'][0]['message']['content']" 2>/dev/null; then
-    ok "G4F działa na :1337 (zwrócił odpowiedź)"
+    ok "G4F działa na localhost:1337 (zwrócił odpowiedź)"
   else
     warn "G4F nie odpowiada lub zwraca błędy"
   fi
@@ -205,9 +232,17 @@ start_g4f() {
   log "Uruchamiam G4F ręcznie..."
   nohup python3 -c "from g4f.api import run_api; run_api(port=1337)" > /tmp/g4f.log 2>&1 &
   local pid=$!
-  sleep 5
+  local attempts=0
+  while [ "$attempts" -lt 10 ]; do
+    sleep 2
+    if curl -sf -o /dev/null http://localhost:1337/v1/models --connect-timeout 2 2>/dev/null; then
+      ok "G4F uruchomiony (PID $pid, after $((attempts * 2 + 2))s)"
+      return 0
+    fi
+    attempts=$((attempts + 1))
+  done
   if kill -0 "$pid" 2>/dev/null; then
-    ok "G4F uruchomiony (PID $pid)"
+    warn "G4F PID $pid żyje ale nie odpowiada — sprawdź /tmp/g4f.log"
   else
     warn "G4F nie wystartował — sprawdź /tmp/g4f.log"
   fi
@@ -289,13 +324,14 @@ setup_api_keys() {
 }
 
 summary() {
-  local v=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "?")
-  local pc="?"
+  local v pc ok
+  v=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "?")
+  pc="?"
   if [ -f "$CONFIG_DIR/opencode.jsonc" ]; then
     pip3 install --break-system-packages json5 -q 2>/dev/null || true
     pc=$(python3 -c "import json5; f=open('$CONFIG_DIR/opencode.jsonc'); d=json5.load(f); print(len(d.get('provider',{})))" 2>/dev/null || echo "?")
   fi
-  local ok="OK"
+  ok="OK"
   command -v opencode &>/dev/null && ok="$(opencode --version 2>/dev/null)" || ok="brak"
   echo ""
   echo -e "${GREEN}╔══════════════════════════════════════════════════════╗${NC}"

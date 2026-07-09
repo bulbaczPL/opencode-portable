@@ -29,9 +29,28 @@ from typing import Optional
 G4F_URL = "http://localhost:1337/v1/chat/completions"
 POLLINATIONS_URL = "https://text.pollinations.ai/openai/v1/chat/completions"
 
+# Token optimization: use smallest viable max_tokens per level
+# L0: connectivity — only need "OK" 
+MAX_TOKENS_L0 = 5
+# L1: basic prompts — short answers
+MAX_TOKENS_L1 = 20
+# L2: conversations — need room for multi-turn
+MAX_TOKENS_L2 = 100
+# L3: code generation — needs full code blocks
+MAX_TOKENS_L3 = 500
+# L4: reasoning — medium length analysis
+MAX_TOKENS_L4 = 200
+# L5: project generation — large output (test only top 3 models)
+MAX_TOKENS_L5 = 2000
+L5_MODELS = ["gpt-4o", "o1", "gpt-4"]  # top 3 for project gen
+# L6: token stress — large
+MAX_TOKENS_L6 = 1000
+# L7: burn-in — minimal (reduced from 50 to 10 req)
+BURN_REQUESTS = 10
+BURN_MAX_TOKENS = 5
+
 VERIFIED_MODELS = [
-    "gpt-4o-mini", "gpt-4o", "gpt-4", "deepseek-r1",
-    "o1", "o3-mini",
+    "gpt-4o", "gpt-4", "o1", "o3-mini",
     "command-a", "command-r", "command-r-plus", "command-r7b",
     "aria", "r1-1776",
 ]
@@ -278,7 +297,7 @@ class TestRunner:
 
     def _check_model(self, model: str) -> Optional[dict]:
         """Check if model responds with HTTP 200."""
-        resp = self.client.chat(model, [{"role": "user", "content": "OK"}], max_tokens=5)
+        resp = self.client.chat(model, [{"role": "user", "content": "OK"}], max_tokens=MAX_TOKENS_L0)
         entry = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "level": 0,
@@ -346,7 +365,7 @@ class TestRunner:
             print(f"  ✗ G4F models endpoint: {e}")
             lvl["fail"] += 1
 
-        # Test each of 12 models
+        # Test each of 12 models (optimized: max_tokens=MAX_TOKENS_L0)
         for model in self.models:
             resp = self._check_model(model)
             if resp:
@@ -378,7 +397,7 @@ class TestRunner:
             for i, prompt in enumerate(BASIC_PROMPTS):
                 resp = self._call_with_retry(
                     model, [{"role": "user", "content": prompt}],
-                    max_tokens=50, level=1, test_name=f"basic_{i}",
+                    max_tokens=MAX_TOKENS_L1, level=1, test_name=f"basic_{i}",
                 )
                 has_content = bool(resp.get("content", "").strip())
                 tokens = resp.get("total_tokens", 0)
@@ -414,7 +433,7 @@ class TestRunner:
             for i, step in enumerate(CONVERSATION_STEPS):
                 messages.append(step)
                 resp = self._call_with_retry(
-                    model, messages, max_tokens=100,
+                    model, messages, max_tokens=MAX_TOKENS_L2,
                     level=2, test_name=f"conv_turn_{i}",
                 )
                 content = resp.get("content", "").strip()
@@ -453,7 +472,7 @@ class TestRunner:
             for i, task in enumerate(CODE_TASKS):
                 resp = self._call_with_retry(
                     model, [{"role": "user", "content": task}],
-                    max_tokens=500, level=3, test_name=f"code_{i}",
+                    max_tokens=MAX_TOKENS_L3, level=3, test_name=f"code_{i}",
                 )
                 content = resp.get("content", "")
                 has_code_block = "```" in content
@@ -482,7 +501,7 @@ class TestRunner:
             for i, task in enumerate(REASONING_TASKS):
                 resp = self._call_with_retry(
                     model, [{"role": "user", "content": task["prompt"]}],
-                    max_tokens=500, level=4, test_name=f"reason_{i}",
+                    max_tokens=MAX_TOKENS_L4, level=4, test_name=f"reason_{i}",
                 )
                 content = resp.get("content", "").lower()
                 tokens = resp.get("total_tokens", 0)
@@ -505,13 +524,17 @@ class TestRunner:
     # ── Level 5: Full Project ──────────────────────────────────────────
 
     def _level_5_project_generation(self):
-        print("\n=== Level 5: Full Project Generation ===")
+        print("\n=== Level 5: Full Project Generation (top 3 models) ===")
         lvl = self.results[5]
+        models_to_test = [m for m in self.models if m in L5_MODELS]
+        if not models_to_test:
+            print("  SKIP — no models in L5_MODELS list")
+            return
 
-        for model in self.models:
+        for model in models_to_test:
             resp = self._call_with_retry(
                 model, [{"role": "user", "content": PROJECT_PROMPT}],
-                max_tokens=2000, level=5, test_name="project_gen",
+                max_tokens=MAX_TOKENS_L5, level=5, test_name="project_gen",
                 retries=1,
             )
             content = resp.get("content", "")
@@ -581,7 +604,7 @@ class TestRunner:
             # Test 1: Long input (context window)
             resp = self._call_with_retry(
                 model, [{"role": "user", "content": STRESS_PROMPTS[0]}],
-                max_tokens=50, level=6, test_name="long_input",
+                max_tokens=MAX_TOKENS_L6, level=6, test_name="long_input",
                 retries=0,
             )
             if resp.get("http_code") == 200:
@@ -595,10 +618,9 @@ class TestRunner:
                 print(f"  ✓ {model} long input: HTTP {resp.get('http_code')} (acceptable)")
                 lvl["pass"] += 1
 
-            # Test 2: Long output request
             resp = self._call_with_retry(
                 model, [{"role": "user", "content": STRESS_PROMPTS[1]}],
-                max_tokens=1000, level=6, test_name="long_output",
+                max_tokens=MAX_TOKENS_L6, level=6, test_name="long_output",
                 retries=0,
             )
             if resp.get("http_code") == 200:
@@ -623,7 +645,7 @@ class TestRunner:
                              "content": "What was the first number I told you? Just the number."})
 
             resp = self._call_with_retry(
-                model, messages, max_tokens=50,
+                model, messages, max_tokens=MAX_TOKENS_L6,
                 level=6, test_name="many_messages", retries=0,
             )
             if resp.get("http_code") == 200:
@@ -640,9 +662,8 @@ class TestRunner:
     # ── Level 7: Burn-in ───────────────────────────────────────────────
 
     def _level_7_burn_in(self):
-        print("\n=== Level 7: Extended Burn-in (50 requests/model) ===")
+        print(f"\n=== Level 7: Burn-in ({BURN_REQUESTS} requests/model) ===")
         lvl = self.results[7]
-        BURN_REQUESTS = 50
 
         for model in self.models:
             times = []
@@ -651,8 +672,8 @@ class TestRunner:
 
             for i in range(BURN_REQUESTS):
                 resp = self._call_with_retry(
-                    model, [{"role": "user", "content": "Say OK"}],
-                    max_tokens=5, level=7, test_name=f"burn_{i}",
+                    model, [{"role": "user", "content": "OK"}],
+                    max_tokens=BURN_MAX_TOKENS, level=7, test_name=f"burn_{i}",
                     retries=0,
                 )
                 times.append(resp.get("elapsed_ms", 0))

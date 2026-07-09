@@ -13,24 +13,25 @@ Zawsze używaj providerów w tej kolejności:
 
 NOTE: ApiAirforce, Kilo Gateway, OVHcloud, smanxfree były oznaczone jako keyless ale nie działają (401/404/timeout). Nie używaj ich jako fallback.
 
-## 2. G4F — dostępne modele (12 verified, działają bez klucza)
+## 2. G4F — dostępne modele (10 verified + 2 transient down, działają bez klucza)
 
-G4F dostarcza 12 modeli które działają natychmiast (żaden klucz nie potrzebny):
+G4F dostarcza modele które działają natychmiast (żaden klucz nie potrzebny).
+Stan na 2026-07-09 (producenci G4F transientnie padają):
 
 | Model | Provider | Uwagi |
 |-------|----------|-------|
-| `g4f/gpt-4o-mini` | WeWordle | Domyślny, szybki |
-| `g4f/gpt-4o` | WeWordle | Pełny GPT-4o |
-| `g4f/gpt-4` | WeWordle | Klasyczny GPT-4 |
-| `g4f/deepseek-r1` | WeWordle | Reasoning |
-| `g4f/o1` | CopilotApp | Reasoning |
-| `g4f/o3-mini` | CopilotApp | Reasoning |
-| `g4f/command-a` | CohereForAI | 111B param |
-| `g4f/command-r` | CohereForAI | |
-| `g4f/command-r-plus` | CohereForAI | |
-| `g4f/command-r7b` | CohereForAI | |
-| `g4f/aria` | OperaAria | |
-| `g4f/r1-1776` | Perplexity | |
+| `g4f/gpt-4o` | CopilotApp | ✅ Pełny GPT-4o, zalecany domyślny |
+| `g4f/gpt-4` | CopilotApp | ✅ Klasyczny GPT-4 |
+| `g4f/o1` | CopilotApp | ✅ Reasoning |
+| `g4f/o3-mini` | CopilotApp | ✅ Reasoning |
+| `g4f/command-a` | HuggingSpace | ✅ 111B param |
+| `g4f/command-r` | CohereForAI | ✅ |
+| `g4f/command-r-plus` | CohereForAI | ✅ ⚠️ retry na transient 500 |
+| `g4f/command-r7b` | HuggingSpace | ✅ |
+| `g4f/aria` | OperaAria | ✅ |
+| `g4f/r1-1776` | Perplexity | ✅ ⚠️ ~40% pustych odpowiedzi |
+| `g4f/gpt-4o-mini` | WeWordle | ❌ transient down (provider 429) |
+| `g4f/deepseek-r1` | WeWordle | ❌ transient down (provider 429) |
 
 ## 3. G4F — zarządzanie
 
@@ -47,7 +48,23 @@ Gdy model nie odpowiada (rate limit, timeout, auth error, pusty response):
 3. Poinformuj użytkownika o przełączeniu
 4. Wznów zadanie na nowym modelu
 
-## 5. Komendy dostępne w TUI
+## 5. Agenci testowi (test_suite/agents/)
+
+| Agent | Skrypt | Opis |
+|-------|--------|------|
+| 1. Unit Tester | `agent_01_unit.sh` | Semantic consistency, instruction following |
+| 2. Code Polyglot | `agent_02_code.sh` | Code generation w 7 językach + compile check |
+| 3. Smart Debugger | `agent_03_debug.sh` | Bug finder + fixer (4 typy błędów) |
+| 4. Refactoring | `agent_04_refactor.sh` | Code quality improvement |
+| 5. Micro Projects | `agent_05_projects.sh` | Generowanie pełnych mikroprojektów |
+| 6. Security Audit | `agent_06_security.sh` | bandit, gitleaks, semgrep — skanowanie repo |
+| 7. Monitor | `agent_07_monitor.sh` | Response time + resource monitoring |
+| 8. Chaos Engineer | `agent_08_chaos.sh` | Restart, rapid switch, concurrent, malformed JSON |
+
+Wszystkie agenty shellcheck-clean (0 error, 0 warning).
+Uruchom: `bash test_suite/agents/agent_XX_*.sh`
+
+## 6. Komendy dostępne w TUI
 
 | Komenda | Opis |
 |---------|------|
@@ -61,14 +78,14 @@ Gdy model nie odpowiada (rate limit, timeout, auth error, pusty response):
 | `/provider-test` | Przetestuj wszystkich 29 providerów |
 | `/provider-register` | Przewodnik rejestracji do darmowych providerów |
 
-## 6. Providerzy z kluczem
+## 7. Providerzy z kluczem
 
 Jeśli użytkownik chce użyć providera wymagającego klucza:
 - Pomóż dodać klucz przez `/connect` w TUI
 - Lub edytuj `~/.config/opencode/opencode.jsonc` i dodaj `"apiKey": "${env:NAZWA_ZMIENNEJ}"`
 - Providerzy z darmowym kluczem (no credit card): Groq, Cerebras, Mistral, NVIDIA NIM, OpenRouter, Cloudflare, Together AI, SambaNova, Hugging Face, GitHub Models, DeepSeek, Scaleway, Cohere, SiliconFlow, Z.AI, Kilo Code, ModelScope, DashScope, Ollama Cloud, FreeTheAi, Aion Labs
 
-## 7. Konfiguracja
+## 8. Konfiguracja
 
 - Główny config: `~/.config/opencode/opencode.jsonc`
 - Agenci: `~/.config/opencode/agents/`

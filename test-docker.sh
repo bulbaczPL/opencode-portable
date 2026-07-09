@@ -321,9 +321,10 @@ run_docs_consistency() {
 # FAZA 6: Raport końcowy
 #=============================================================================
 generate_report() {
-  local passed_count=$(cat "$RESULTS_DIR/models_passed.txt" 2>/dev/null || echo 0)
-  local failed_count=$(cat "$RESULTS_DIR/models_failed.txt" 2>/dev/null || echo 0)
-  local total_tests=$((PASS + FAIL))
+  local passed_count failed_count total_tests
+  passed_count=$(cat "$RESULTS_DIR/models_passed.txt" 2>/dev/null || echo 0)
+  failed_count=$(cat "$RESULTS_DIR/models_failed.txt" 2>/dev/null || echo 0)
+  total_tests=$((PASS + FAIL))
 
   cat > "$RESULTS_DIR/summary.md" << EOF
 # opencode-portable TEST REPORT
