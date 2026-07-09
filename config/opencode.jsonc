@@ -7,7 +7,7 @@
   // Global instructions (loaded with AGENTS.md)
   "instructions": ["AGENTS.md"],
 
-  // Default model (G4F local keyless aggregator - 91+ models, no API key)
+  // Default model (G4F local keyless aggregator - 18 verified models, no API key)
   "model": "g4f/gpt-4o-mini",
 
   // Lightweight tasks use a cheaper model
@@ -24,9 +24,9 @@
 
   // === MODEL FAILOVER CONFIG ===
   // When a model fails, use /switch-model or @model-router to auto-failover
-  // through the fallback chain of 28 free models
+  // through the fallback chain of 27 providers
 
-  // === FREE AI PROVIDERS (2026 - ~26 providers, 100+ models) ===
+  // === FREE AI PROVIDERS (2026 - 27 providers, 18 verified G4F models) ===
   // API keys: add via /connect command in TUI (except keyless providers)
   // Keyless providers work immediately without any key
 
@@ -507,9 +507,9 @@
     // ═══════════════════════════════════════════════════════════════════════
 
     // ─── 28. G4F (GPT4Free) Local API (PRIMARY - KEYLESS ✅) ──────────
-    // Self-hosted keyless aggregator. Tested working models only.
+    // Self-hosted keyless aggregator. 18 verified text models.
+    // All 18 models verified via live curl test at localhost:1337 ✅ 2026-07-09
     // Run: python -c "from g4f.api import run_api; run_api(port=1337)"
-    // All models verified via live curl test at localhost:1337 ✅ 2026-07-09
     "g4f": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "G4F Local (Keyless, 17 Working Models)",
