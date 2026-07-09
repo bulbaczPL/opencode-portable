@@ -15,7 +15,7 @@ set -euo pipefail
 
 REPO="bulbaczPL/opencode-portable"
 REPO_URL="https://github.com/$REPO.git"
-INSTALL_DIR="$HOME/opencode-portable"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/opencode-portable}"
 CONFIG_DIR="$HOME/.config/opencode"
 SYSTEMD_DIR="$HOME/.config/systemd/user"
 
@@ -32,7 +32,6 @@ do_update() {
   log "Sprawdzam aktualizacje..."
 
   if [ -d "$INSTALL_DIR/.git" ]; then
-    # Lokalna kopia — git pull
     cd "$INSTALL_DIR"
     local old_hash
     old_hash=$(git rev-parse HEAD 2>/dev/null || echo "")
@@ -41,8 +40,12 @@ do_update() {
     new_hash=$(git rev-parse origin/main 2>/dev/null || echo "")
 
     if [ -n "$old_hash" ] && [ "$new_hash" != "$old_hash" ] && [ -n "$new_hash" ]; then
-      echo -ne "  Nowa wersja. Aktualizować? [Y/n] "
-      read -r ans
+      if [ -t 0 ]; then
+        echo -ne "  Nowa wersja. Aktualizować? [Y/n] "
+        read -r ans
+      else
+        ans="y"
+      fi
       if [ "$ans" != "n" ] && [ "$ans" != "N" ]; then
         git pull origin main 2>&1 | tail -1
         ok "Zaktualizowano do najnowszej wersji"
@@ -78,8 +81,17 @@ install_deps() {
   ok "Python: $(python3 --version)"
   ok "pip: $(pip3 --version | awk '{print $2}')"
 
-  if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
-    log "Instaluję Node.js..."
+  # Always ensure Node.js 22+ (Ubuntu apt gives 18 which is too old)
+  if command -v node &>/dev/null; then
+    local node_major
+    node_major=$(node --version 2>/dev/null | sed 's/v//' | cut -d. -f1)
+    if [ -n "$node_major" ] && [ "$node_major" -lt 22 ]; then
+      log "Aktualizuję Node.js z v$node_major do v22..."
+      curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &>/dev/null
+      apt-get install -y nodejs >/dev/null 2>&1
+    fi
+  else
+    log "Instaluję Node.js 22..."
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &>/dev/null
     apt-get install -y nodejs >/dev/null 2>&1
   fi
@@ -119,7 +131,7 @@ install_opencode() {
 install_g4f() {
   log "Sprawdzam G4F..."
   python3 -c "import g4f" &>/dev/null 2>&1 \
-    && ok "G4F: $(python3 -c "import g4f; print(f'v{g4f.__version__}')" 2>/dev/null || python3 -c "import importlib.metadata; print(importlib.metadata.version('g4f'))" 2>/dev/null || echo 'zainstalowany')" \
+    && ok "G4F: $(python3 -c "import importlib.metadata; print(importlib.metadata.version('g4f'))" 2>/dev/null || echo 'zainstalowany')" \
     || { pip3 install --break-system-packages g4f 2>&1 | tail -1 && ok "G4F zainstalowany"; }
 }
 
@@ -161,19 +173,119 @@ setup_config() {
 
 setup_systemd() {
   log "Konfiguruję G4F service..."
+  local PYTHON_PATH
+  PYTHON_PATH=$(which python3 2>/dev/null || echo "python3")
   mkdir -p "$SYSTEMD_DIR"
-  cp "$INSTALL_DIR/systemd/g4f.service" "$SYSTEMD_DIR/g4f.service"
+  sed "s|__PYTHON_PATH__|$PYTHON_PATH|g" "$INSTALL_DIR/systemd/g4f.service" > "$SYSTEMD_DIR/g4f.service"
   systemctl --user daemon-reload 2>/dev/null || { warn "systemd nie dostępny"; return; }
   systemctl --user enable --now g4f.service 2>/dev/null && ok "G4F aktywny" || warn "G4F: restart"
 }
 
 test_g4f() {
   sleep 3
-  curl -sf -o /dev/null -w "%{http_code}" -X POST \
+  local result
+  result=$(curl -sf -X POST \
     "http://localhost:1337/v1/chat/completions" \
     -H "Content-Type: application/json" \
-    -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}' 2>/dev/null \
-    | grep -q 200 && ok "G4F działa na :1337" || warn "G4F nie odpowiada"
+    -d '{"model":"gpt-4o-mini","messages":[{"role":"user","content":"hi"}],"max_tokens":3}' 2>/dev/null)
+  local curl_exit=$?
+  if echo "$result" | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['choices'][0]['message']['content']" 2>/dev/null; then
+    ok "G4F działa na :1337 (zwrócił odpowiedź)"
+  else
+    warn "G4F nie odpowiada lub zwraca błędy"
+  fi
+}
+
+start_g4f() {
+  # Uruchom G4F ręcznie jeśli systemd nie jest dostępne
+  if curl -sf -o /dev/null http://localhost:1337/v1/models --connect-timeout 2 2>/dev/null; then
+    ok "G4F już działa na :1337"
+    return 0
+  fi
+  log "Uruchamiam G4F ręcznie..."
+  nohup python3 -c "from g4f.api import run_api; run_api(port=1337)" > /tmp/g4f.log 2>&1 &
+  local pid=$!
+  sleep 5
+  if kill -0 "$pid" 2>/dev/null; then
+    ok "G4F uruchomiony (PID $pid)"
+  else
+    warn "G4F nie wystartował — sprawdź /tmp/g4f.log"
+  fi
+}
+
+setup_env() {
+  local ENV_FILE="$HOME/.bash_env"
+  log "Sprawdzam zmienne środowiskowe..."
+  touch "$ENV_FILE"
+  # Dodaj PATH dla opencode jeśli nie istnieje
+  local NPM_BIN
+  NPM_BIN=$(npm root -g 2>/dev/null)/@opencode-ai/cli/bin
+  if [ -d "$NPM_BIN" ]; then
+    if ! grep -q "OPENCODE_PATH" "$ENV_FILE" 2>/dev/null; then
+      echo "# opencode-portable PATH" >> "$ENV_FILE"
+      echo "export PATH=\"\$PATH:$NPM_BIN\"" >> "$ENV_FILE"
+      ok "Dodano opencode do PATH w ~/.bash_env"
+    fi
+  fi
+  # Sprawdź czy ~/.bash_env jest ładowany
+  if ! grep -q "bash_env" "$HOME/.bashrc" 2>/dev/null; then
+    echo "[ -f ~/.bash_env ] && . ~/.bash_env" >> "$HOME/.bashrc"
+    ok "Dodano ładowanie ~/.bash_env do .bashrc"
+  fi
+}
+
+setup_api_keys() {
+  if [ ! -t 0 ]; then
+    warn "Non-interactive mode — pomijam konfigurację kluczy"
+    return
+  fi
+
+  echo ""
+  echo -e "${YELLOW}┌─────────────────────────────────────────────────────────┐${NC}"
+  echo -e "${YELLOW}│  Konfiguracja darmowych kluczy API (opcjonalna)         │${NC}"
+  echo -e "${YELLOW}│  G4F + 12 modeli działa BEZ kluczy od razu!            │${NC}"
+  echo -e "${YELLOW}│  Możesz pominąć (Enter) i dodać później przez /connect │${NC}"
+  echo -e "${YELLOW}└─────────────────────────────────────────────────────────┘${NC}"
+  echo ""
+
+  local ENV_FILE="$HOME/.bash_env"
+  local CONFIG_FILE="$CONFIG_DIR/opencode.jsonc"
+
+  if [ ! -f "$CONFIG_FILE" ]; then
+    warn "Brak opencode.jsonc — nie można dodać kluczy"
+    return
+  fi
+
+  # Mapa: nazwa providera w env → nazwa w opencode.jsonc
+  for entry in "GROQ:groq" "CEREBRAS:cerebras" "MISTRAL:mistral" "NVIDIA:nvidia" "OPENROUTER:openrouter"; do
+    local env_name="${entry%%:*}"
+    local config_name="${entry##*:}"
+    echo -ne "  Dodać klucz ${CYAN}${env_name}${NC}? [Enter=pomiń] "
+    read -r key
+    if [ -z "$key" ]; then
+      continue
+    fi
+    local var_name="${env_name}_API_KEY"
+
+    # Dodaj/aktualizuj w .bash_env (zabezpieczony separator #)
+    if grep -q "$var_name" "$ENV_FILE" 2>/dev/null; then
+      sed -i "s#export $var_name=.*#export $var_name=\"$key\"#" "$ENV_FILE"
+    else
+      echo "export $var_name=\"$key\"" >> "$ENV_FILE"
+    fi
+
+    # Dodaj apiKey do opencode.jsonc (jeśli jeszcze nie ma)
+    if grep -q "\"$config_name\"" "$CONFIG_FILE" 2>/dev/null; then
+      if ! grep -q "apiKey.*${var_name}" "$CONFIG_FILE" 2>/dev/null; then
+        sed -i "/\"$config_name\": {/,/\"models\":/ s/\"options\": {/\"options\": {\n      \"apiKey\": \"\$\{env:${var_name}\}\",/" "$CONFIG_FILE"
+      fi
+    fi
+    ok "$var_name dodany do ~/.bash_env i opencode.jsonc"
+  done
+
+  chmod 600 "$ENV_FILE"
+  ok "Zabezpieczono ~/.bash_env (chmod 600)"
+  ok "Konfiguracja kluczy zakończona"
 }
 
 summary() {
@@ -204,11 +316,14 @@ main() {
   echo ""
   install_deps || exit 1
   do_update
+  setup_env
   install_opencode
   install_g4f
   setup_config
   setup_systemd
+  start_g4f
   test_g4f
+  setup_api_keys
   summary
 }
 

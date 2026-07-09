@@ -1,12 +1,12 @@
 [Unit]
-Description=G4F (GPT4Free) Keyless LLM Aggregator - 1058 models, 30+ providers
+Description=G4F (GPT4Free) Keyless LLM Aggregator - 12 verified models, 30+ providers
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/michal/.pyenv/versions/3.12.9/bin/python -c "from g4f.api import run_api; run_api(port=1337)"
-Restart=always
-RestartSec=5
+ExecStart=__PYTHON_PATH__ -c "from g4f.api import run_api; run_api(port=1337)"
+Restart=on-failure
+RestartSec=10
 Environment=PYTHONUNBUFFERED=1
 
 [Install]

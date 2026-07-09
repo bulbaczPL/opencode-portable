@@ -7,7 +7,7 @@
 
 <p align="center">
   <b>Portable AI configuration for <a href="https://opencode.ai">opencode CLI</a><br>
-  Zero API keys &middot; 18 verified models &middot; 27 providers &middot; 1 command</b>
+  Zero API keys &middot; 12 verified models &middot; 27 providers &middot; All tested</b>
 </p>
 
 <p align="center">
@@ -26,7 +26,8 @@
   <a href="https://github.com/bulbaczPL/opencode-portable/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT License"></a>
   <a href="https://github.com/bulbaczPL/opencode-portable"><img src="https://img.shields.io/github/stars/bulbaczPL/opencode-portable?style=for-the-badge&logo=github&color=black" alt="GitHub stars"></a>
   <a href="https://raw.githubusercontent.com/bulbaczPL/opencode-portable/main/setup.sh"><img src="https://img.shields.io/badge/install-curl|bash-blue?style=for-the-badge&logo=linux&logoColor=white" alt="curl | bash"></a>
-  <a href="https://github.com/xtekky/gpt4free"><img src="https://img.shields.io/badge/powered_by-G4F 7.7.2-purple?style=for-the-badge&logo=python&logoColor=white" alt="G4F"></a>
+  <a href="https://github.com/xtekky/gpt4free"><img src="https://img.shields.io/badge/powered_by-G4F 7.7.6-purple?style=for-the-badge&logo=python&logoColor=white" alt="G4F"></a>
+  <a href="https://github.com/bulbaczPL/opencode-portable/actions"><img src="https://img.shields.io/badge/tests-31/31%20✅-success?style=for-the-badge&logo=githubactions&logoColor=white" alt="Tests"></a>
   <a href="https://github.com/bulbaczPL/opencode-portable/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge&logo=git&logoColor=white" alt="PRs welcome"></a>
 </p>
 
@@ -74,7 +75,7 @@ Then run:
 opencode
 ```
 
-**Requirements:** Linux or WSL, internet connection (first install only). Everything else auto-installs.
+**Requirements:** Linux or WSL, internet connection (required at all times — all models run in the cloud via G4F + Pollinations). Everything else auto-installs.
 
 > [!TIP]
 > Run `opencode` directly after install — the default model `gpt-4o-mini` works immediately via local G4F. No API keys needed.
@@ -87,8 +88,8 @@ opencode
 <tr>
 <td>
 
-- **🔑 Zero API keys required** — 18 models work immediately via G4F + Pollinations
-- **🧠 18 verified text models** — each tested live via curl, no guesswork
+- **🔑 Zero API keys required** — 12 models work immediately via G4F + Pollinations
+- **🧠 12 verified text models** — each tested live via curl, no guesswork
 - **🌐 27 AI providers** — keyless + free-tier with API key
 - **⚡ Auto failover** — transparent fallback when a model hits rate limits
 - **🐳 Docker-ready** — G4F runs in a container, no dependency hell
@@ -112,7 +113,7 @@ These models work **right now, with zero configuration, no API key**.
 
 | Provider | Models | Tested | Notes |
 |----------|--------|--------|-------|
-| **G4F** (local, Docker) | `gpt-4o-mini` `gpt-4o` `gpt-4` `o3-mini` `deepseek-r1` `deepseek` `deepseek-coder` `command-a` `command-a-03-2025` `command-r7b` `command-r` `command-r-plus` `gpt-5-thinking` `r1-1776` `reasoning` `perplexity` `pplx_pro` `aria` | ✅ live curl test | 18 text models — requires G4F running on `localhost:1337` |
+| **G4F** (local, Docker) | `gpt-4o-mini` `gpt-4o` `gpt-4` `deepseek-r1` `o1` `o3-mini` `command-a` `command-r` `command-r-plus` `command-r7b` `aria` `r1-1776` | ✅ live curl test (31/31 tests) | 12 text models — requires G4F running on `localhost:1337` |
 | **Pollinations.ai** | `GPT-OSS 20B` (tool-capable, reasoning) | ✅ live curl test | 1 concurrent request per IP — [text.pollinations.ai](https://text.pollinations.ai) |
 
 > [!WARNING]
@@ -152,7 +153,7 @@ python3 -c "from g4f.api import run_api; run_api(port=1337)"
 
 | Provider | Tier | Models | Key needed |
 |----------|------|--------|------------|
-| **G4F** (local) | 🟢 | 18 verified text models | — |
+| **G4F** (local) | 🟢 | 12 verified text models (31/31 tests ✅) | — |
 | **Pollinations.ai** | 🟢 | GPT-OSS 20B | — |
 | **Groq** | 🟡 | Llama 3.3, Gemma 2, Mixtral, DeepSeek-R1-distill | Free key |
 | **Cerebras** | 🟡 | Llama, Qwen (fastest inference) | Free key |

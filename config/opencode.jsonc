@@ -7,7 +7,7 @@
   // Global instructions (loaded with AGENTS.md)
   "instructions": ["AGENTS.md"],
 
-  // Default model (G4F local keyless aggregator - 18 verified models, no API key)
+  // Default model (G4F local keyless aggregator - 12 verified models, no API key)
   "model": "g4f/gpt-4o-mini",
 
   // Lightweight tasks use a cheaper model
@@ -26,7 +26,7 @@
   // When a model fails, use /switch-model or @model-router to auto-failover
   // through the fallback chain of 27 providers
 
-  // === FREE AI PROVIDERS (2026 - 27 providers, 18 verified G4F models) ===
+  // === FREE AI PROVIDERS (2026 - 27 providers, 12 verified G4F models) ===
   // API keys: add via /connect command in TUI (except keyless providers)
   // Keyless providers work immediately without any key
 
@@ -49,17 +49,17 @@
       }
     },
 
-    // ─── 2. ApiAirforce (REQUIRES AUTH - NOT KEYLESS) ────────────────
-    // Previously keyless, now requires API key. :free models need auth.
-    // Falls back to other keyless providers.
+    // ─── 2. ApiAirforce (BROKEN — REQUIRES AUTH, HTTP 401) ─────────
+    // Previously keyless, now requires API key (HTTP 401 without auth).
+    // Do NOT rely on this as keyless fallback.
     "apiairforce": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "ApiAirforce (Keyless)",
+      "name": "ApiAirforce (Broken — needs auth)",
       "options": {
         "baseURL": "https://api.airforce/v1"
       },
       "models": {
-        "openai": { "name": "OpenAI-compatible (Keyless)" },
+        "openai": { "name": "OpenAI-compatible" },
         "grok-4.1-mini": { "name": "Grok 4.1 Mini" },
         "step-3.5-flash": { "name": "Step 3.5 Flash" },
         "gemma3-270m": { "name": "Gemma 3 270M" },
@@ -82,12 +82,12 @@
       }
     },
 
-    // ─── 5. OVHcloud AI Endpoints (KEYLESS - NOT WORKING) ─────────────
-    // Returns 404. Was working in the past but currently broken.
-    // Kept for reference only.
+    // ─── 5. OVHcloud AI Endpoints (BROKEN — HTTP 404) ─────────────────
+    // Returns 404 since early 2026. Was keyless in the past.
+    // Kept for reference only — do NOT add to failover chain.
     "ovhcloud": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "OVHcloud AI (Keyless - broken)",
+      "name": "OVHcloud AI (Broken — HTTP 404)",
       "options": {
         "baseURL": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
       },
@@ -507,34 +507,46 @@
     // ═══════════════════════════════════════════════════════════════════════
 
     // ─── 28. G4F (GPT4Free) Local API (PRIMARY - KEYLESS ✅) ──────────
-    // Self-hosted keyless aggregator. 18 verified text models.
-    // All 18 models verified via live curl test at localhost:1337 ✅ 2026-07-09
+    // Self-hosted keyless aggregator. 12 verified working text models.
+    // Tested live via curl at localhost:1337 ✅ 2026-07-09
     // Run: python -c "from g4f.api import run_api; run_api(port=1337)"
+    //
+    // Model naming: use "g4f/<model-name>" in opencode (e.g. "g4f/gpt-4o-mini")
+    //
+    // NOTE: G4F lists many more models internally but only these 12 respond
+    //       with HTTP 200 without additional API keys or browser cookies.
+    //       The remaining models require: API keys (Together, OpenRouter,
+    //       GeminiPro, PuterJS), browser cookies (Gemini, HuggingChat),
+    //       or additional packages (curl_cffi, zendriver, browser_cookie3).
     "g4f": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "G4F Local (Keyless, 17 Working Models)",
+      "name": "G4F Local (Keyless, 12 Verified Working Models)",
       "options": {
         "baseURL": "http://localhost:1337/v1"
       },
       "models": {
-        "gpt-4o-mini": { "name": "GPT-4o Mini" },
-        "gpt-4o": { "name": "GPT-4o" },
-        "gpt-4": { "name": "GPT-4" },
-        "o3-mini": { "name": "o3 Mini (Reasoning)" },
-        "deepseek-r1": { "name": "DeepSeek R1" },
-        "deepseek": { "name": "DeepSeek" },
-        "deepseek-coder": { "name": "DeepSeek Coder" },
-        "command-a": { "name": "Command A (111B)" },
-        "command-a-03-2025": { "name": "Command A 03/2025" },
-        "command-r7b": { "name": "Command R7B" },
-        "command-r": { "name": "Command R" },
-        "command-r-plus": { "name": "Command R+" },
-        "gpt-5-thinking": { "name": "GPT-5 Thinking" },
-        "r1-1776": { "name": "R1-1776" },
-        "reasoning": { "name": "Reasoning" },
-        "perplexity": { "name": "Perplexity" },
-        "pplx_pro": { "name": "Perplexity Pro" },
-        "aria": { "name": "Aria" }
+        // ── 12 verified working (zero setup, HTTP 200 ✅) ─────────────
+        // WeWordle proxy — keyless, no auth
+        "gpt-4o-mini": { "name": "GPT-4o Mini (via WeWordle)" },
+        "gpt-4o":     { "name": "GPT-4o (via WeWordle)" },
+        "gpt-4":      { "name": "GPT-4 (via WeWordle)" },
+        "deepseek-r1":{ "name": "DeepSeek R1 (via WeWordle) ⚠️ ~40% pustych odpowiedzi" },
+
+        // CopilotApp — keyless WebSocket to copilot.microsoft.com
+        "o1":         { "name": "o1 Reasoning (via CopilotApp)" },
+        "o3-mini":    { "name": "o3 Mini Reasoning (via CopilotApp)" },
+
+        // CohereForAI C4AI Command — keyless, no auth
+        "command-a":  { "name": "Command A 111B (via CohereForAI)" },
+        "command-r":  { "name": "Command R (via CohereForAI)" },
+        "command-r-plus":{ "name": "Command R+ (via CohereForAI)" },
+        "command-r7b":{ "name": "Command R7B (via CohereForAI)" },
+
+        // OperaAria — keyless
+        "aria":       { "name": "Aria (via OperaAria)" },
+
+        // Perplexity — keyless
+        "r1-1776":    { "name": "R1-1776 (via Perplexity)" }
       }
     },
 

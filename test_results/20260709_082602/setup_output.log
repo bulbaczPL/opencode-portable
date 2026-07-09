@@ -1,0 +1,33 @@
+
+[1;36m╔══════════════════════════════════════════════════════╗[0m
+[1;36m║  opencode-portable — Instalator / Aktualizator      ║[0m
+[1;36m╚══════════════════════════════════════════════════════╝[0m
+
+[1;36m[opencode-portable][0m Sprawdzam zależności...
+[1;32m  ✓[0m Python: Python 3.12.3
+[1;32m  ✓[0m pip: 24.0
+[1;36m[opencode-portable][0m Aktualizuję Node.js z v18 do v22...
+[1;32m  ✓[0m Node.js: v22.23.1
+[1;32m  ✓[0m npm: 10.9.8
+[1;32m  ✓[0m git: 2.43.0
+[1;36m[opencode-portable][0m Sprawdzam aktualizacje...
+[1;36m[opencode-portable][0m Pobieram pliki z GitHub (curl)...
+[1;32m  ✓[0m Pobrano pliki
+[1;36m[opencode-portable][0m Sprawdzam zmienne środowiskowe...
+[1;32m  ✓[0m Dodano ładowanie ~/.bash_env do .bashrc
+[1;36m[opencode-portable][0m Sprawdzam opencode...
+
+added 5 packages in 6s
+[1;32m  ✓[0m opencode CLI zainstalowany
+[1;36m[opencode-portable][0m Sprawdzam G4F...
+[1;32m  ✓[0m G4F: 7.7.6
+[1;36m[opencode-portable][0m Konfiguruję opencode...
+[1;32m  ✓[0m config skopiowany
+[1;32m  ✓[0m AGENTS.md skopiowany
+[1;32m  ✓[0m agenty: 2
+[1;32m  ✓[0m komendy: 8
+[1;32m  ✓[0m skille: 3
+[1;36m[opencode-portable][0m Konfiguruję G4F service...
+[1;33m  ⚠[0m systemd nie dostępny
+[1;36m[opencode-portable][0m Uruchamiam G4F ręcznie...
+[1;33m  ⚠[0m G4F nie wystartował — sprawdź /tmp/g4f.log
