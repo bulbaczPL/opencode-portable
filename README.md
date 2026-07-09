@@ -11,15 +11,15 @@
 </p>
 
 <p align="center">
-  <a href="README.pl.md"><img src="https://img.shields.io/badge/🇵🇱-Polski-gray?style=flat-square" alt="polski"></a>
-  <a href="README.de.md"><img src="https://img.shields.io/badge/🇩🇪-Deutsch-gray?style=flat-square" alt="deutsch"></a>
-  <a href="README.fr.md"><img src="https://img.shields.io/badge/🇫🇷-Français-gray?style=flat-square" alt="français"></a>
-  <a href="README.es.md"><img src="https://img.shields.io/badge/🇪🇸-Español-gray?style=flat-square" alt="español"></a>
-  <a href="README.it.md"><img src="https://img.shields.io/badge/🇮🇹-Italiano-gray?style=flat-square" alt="italiano"></a>
-  <a href="README.pt.md"><img src="https://img.shields.io/badge/🇵🇹-Português-gray?style=flat-square" alt="português"></a>
-  <a href="README.ru.md"><img src="https://img.shields.io/badge/🇷🇺-Русский-gray?style=flat-square" alt="русский"></a>
-  <a href="README.zh.md"><img src="https://img.shields.io/badge/🇨🇳-中文-gray?style=flat-square" alt="中文"></a>
-  <a href="README.ja.md"><img src="https://img.shields.io/badge/🇯🇵-日本語-gray?style=flat-square" alt="日本語"></a>
+  <img src="https://img.shields.io/badge/🇵🇱-Polski-gray?style=flat-square" alt="polski">
+  <img src="https://img.shields.io/badge/🇩🇪-Deutsch-gray?style=flat-square" alt="deutsch">
+  <img src="https://img.shields.io/badge/🇫🇷-Français-gray?style=flat-square" alt="français">
+  <img src="https://img.shields.io/badge/🇪🇸-Español-gray?style=flat-square" alt="español">
+  <img src="https://img.shields.io/badge/🇮🇹-Italiano-gray?style=flat-square" alt="italiano">
+  <img src="https://img.shields.io/badge/🇵🇹-Português-gray?style=flat-square" alt="português">
+  <img src="https://img.shields.io/badge/🇷🇺-Русский-gray?style=flat-square" alt="русский">
+  <img src="https://img.shields.io/badge/🇨🇳-中文-gray?style=flat-square" alt="中文">
+  <img src="https://img.shields.io/badge/🇯🇵-日本語-gray?style=flat-square" alt="日本語">
 </p>
 
 <p align="center">
@@ -290,56 +290,56 @@ Contributions are welcome! Found a working keyless endpoint? Opened an issue or 
 
 ---
 
-<a id="polski"></a><details><summary>🇵🇱 Polski — przeczytaj ten dokument po polsku</summary>
+<details><summary>🇵🇱 Polski — przeczytaj ten dokument po polsku</summary>
 
-[Otwórz README.pl.md](README.pl.md)
-
-</details>
-
-<a id="deutsch"></a><details><summary>🇩🇪 Deutsch — dieses Dokument auf Deutsch lesen</summary>
-
-[README.de.md öffnen](README.de.md)
+Tłumaczenie w przygotowaniu. W międzyczasie możesz przetłumaczyć stronę przez przeglądarkę (Ctrl+klik → Przetłumacz na polski).
 
 </details>
 
-<a id="francais"></a><details><summary>🇫🇷 Français — lire ce document en français</summary>
+<details><summary>🇩🇪 Deutsch — dieses Dokument auf Deutsch lesen</summary>
 
-[Ouvrir README.fr.md](README.fr.md)
-
-</details>
-
-<a id="espanol"></a><details><summary>🇪🇸 Español — leer este documento en español</summary>
-
-[Abrir README.es.md](README.es.md)
+Übersetzung in Vorbereitung. Du kannst die Seite im Browser übersetzen lassen.
 
 </details>
 
-<a id="italiano"></a><details><summary>🇮🇹 Italiano — leggere questo documento in italiano</summary>
+<details><summary>🇫🇷 Français — lire ce document en français</summary>
 
-[Apri README.it.md](README.it.md)
-
-</details>
-
-<a id="portugues"></a><details><summary>🇵🇹 Português — ler este documento em português</summary>
-
-[Abrir README.pt.md](README.pt.md)
+Traduction en préparation. Vous pouvez traduire la page via le navigateur.
 
 </details>
 
-<a id="russkiy"></a><details><summary>🇷🇺 Русский — прочитать этот документ на русском</summary>
+<details><summary>🇪🇸 Español — leer este documento en español</summary>
 
-[Открыть README.ru.md](README.ru.md)
-
-</details>
-
-<a id="zhongwen"></a><details><summary>🇨🇳 中文 — 阅读此文档的中文版本</summary>
-
-[打开 README.zh.md](README.zh.md)
+Traducción en preparación. Puedes traducir la página con el navegador.
 
 </details>
 
-<a id="nihongo"></a><details><summary>🇯🇵 日本語 — 日本語でこのドキュメントを読む</summary>
+<details><summary>🇮🇹 Italiano — leggere questo documento in italiano</summary>
 
-[README.ja.md を開く](README.ja.md)
+Traduzione in preparazione. Puoi tradurre la pagina tramite il browser.
+
+</details>
+
+<details><summary>🇵🇹 Português — ler este documento em português</summary>
+
+Tradução em preparação. Podes traduzir a página através do navegador.
+
+</details>
+
+<details><summary>🇷🇺 Русский — прочитать этот документ на русском</summary>
+
+Перевод готовится. Вы можете перевести страницу в браузере.
+
+</details>
+
+<details><summary>🇨🇳 中文 — 阅读此文档的中文版本</summary>
+
+翻译准备中。您可以通过浏览器翻译此页面。
+
+</details>
+
+<details><summary>🇯🇵 日本語 — 日本語でこのドキュメントを読む</summary>
+
+翻訳準備中。ブラウザでページを翻訳してください。
 
 </details>
